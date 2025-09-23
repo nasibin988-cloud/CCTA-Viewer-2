@@ -1,0 +1,99 @@
+/* src/components/ChangeMatrix.module.css */
+.matrixContainer {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    overflow-x: auto;
+}
+
+.toggleContainer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-right: 4px;
+}
+
+.toggleContainer span {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted-ink);
+}
+
+.toggle, .activeToggle {
+    border: 1px solid var(--line);
+    background-color: transparent;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted-ink);
+    transition: all 0.2s ease;
+}
+
+.activeToggle {
+    background-color: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.matrixTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    table-layout: fixed;
+}
+
+.matrixTable th, .matrixTable td {
+    border: 1px solid var(--line);
+    text-align: center;
+    padding: 6px 4px;
+    min-width: 55px; /* Give more space for values */
+    height: 38px;
+}
+
+.matrixTable th {
+    font-weight: 600;
+    background-color: #f8fafc;
+    font-size: 10px;
+    color: var(--muted-ink);
+    padding: 4px;
+}
+
+.metricHeader {
+    text-align: left !important;
+    font-weight: 600;
+    width: 120px;
+    padding-left: 8px !important;
+}
+
+.cellContent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.cellContent > span:first-child {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1;
+}
+.worsened { color: #d62828; }
+.improved { color: #1b9e77; }
+.stable { color: #64748b; }
+
+.valueText {
+    font-size: 11px;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+/* Cell Background Colors for Absolute Risk */
+.riskSevere { background-color: #fee2e2; }
+.riskModerate { background-color: #ffedd5; }
+.riskMild { background-color: #fef3c7; }
+.riskMinimal { background-color: #dcfce7; }
+.riskNone { background-color: #f8fafc; }
