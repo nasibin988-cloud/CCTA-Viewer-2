@@ -1,65 +1,43 @@
+/* src/styles/tokens.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --font-primary: 'Inter', system-ui, sans-serif;
-  /* ... rest of your variables */
-}
-
-:root {
   /* Font & Spacing */
-  --font-primary: system-ui, sans-serif;
+  --font-primary: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   --text-body: 14px;
   --text-small: 12px;
   --text-h2: 18px;
   --text-h1: 24px;
   --space-unit: 8px;
 
-   /* NEW: Elucid-Inspired Color Palette */
-  --accent: #0A75C4; /* Elucid's primary blue */
-  --ink: #2d3748; /* A softer, matte black for text */
-  --muted-ink: #718096; /* A clean, muted gray */
-  --bg-page: linear-gradient(135deg, #1A202C 0%, #2B6CB0 100%);
-  --bg-card: #ffffff; /* Card background will be handled separately */
-  --line: #e2e8f0; /* A softer line color */
+  /* Dark Blue Color Palette */
+  --accent: #4299e1; /* Light Blue for accents and highlights */
+  --ink: #e2e8f0; /* Light gray for primary text */
+  --muted-ink: #a0aec0; /* Muted gray for secondary text */
+  --dark-ink: #1a202c; /* Dark text for light backgrounds */
+  --bg-card: rgba(26, 32, 44, 0.7); /* Semi-transparent dark card background */
+  --line: #4a5568; /* A darker line color for borders */
 
-  /* Greys & Neutrals */
-  --ink: #111418;
-  --muted-ink: #4b5563;
-  --bg: #ffffff;
-  --card: #f8fafc;
-  --line: #e5e7eb;
+  /* UPDATED Hazard Ramp */
+  --risk-dark-green: #006400;     /* No Risk: Dark Green */
+  --risk-green: #1b9e77;          /* Minimal Risk: Green */
+  --risk-yellow: #e6b800;         /* Mild Risk: Yellow */
+  --risk-orange: #e67e22;         /* Moderate Risk: Orange */
+  --risk-red: #d62828;           /* Severe Risk: Red */
+  --risk-neutral-gray: #4a5568;  /* For non-applicable/inactive states */
 
-  /* Original Hazard Ramp */
-  --risk-green: #1b9e77;
-  --risk-yellow: #e6b800;
-  --risk-orange: #e67e22;
-  --risk-red: #d62828;
-    /* COLOR CHANGES */
-  --risk-neutral-gray: #006400; /* CHANGED from #a9a9a9 to dark green */
-  --risk-green: #c8e6c9;        /* CHANGED from #1b9e77 to light green */
-
-  /* Composition */
+  /* Composition Colors */
   --ncp-color: #2a9d8f;
   --cp-color: #4c78a8;
   --lrb-color: #7b2cbf;
-
-  /* Accents */
-  --accent: #2563eb;
-
-  /* ADD THESE NEW VARIABLES FOR THE DIAGRAM */
---diagram-stenosis-none: #d1d5db;     /* A neutral gray for no plaque */
---diagram-stenosis-minimal: #10b981;   /* A clear, vibrant green for minimal plaque */
 }
 
 body {
-  background-color: #75B8E6; /* This is the light blue color */
+  /* Gradient background */
+  background: linear-gradient(135deg, #0b1120 0%, #1a2b4d 100%);
+  background-attachment: fixed;
   font-family: var(--font-primary);
   color: var(--ink);
   margin: 0;
   padding: 0;
-}
-body {
-  /* Use the light gray from our palette and fade to white */
-  background: linear-gradient(to bottom, #f7fafc, #ffffff);
-  background-attachment: fixed; /* Ensures the gradient doesn't scroll with content */
 }

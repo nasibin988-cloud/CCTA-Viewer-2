@@ -1,133 +1,159 @@
-/* src/components/SegmentBarChart.module.css */
 .container {
-    padding: 24px;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    background-color: var(--bg-card);
-    margin-top: 16px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.08);
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background-color: var(--bg-card);
+  margin-top: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.08);
 }
 
 .title {
-    font-size: 20px;
-    font-weight: 600;
-    margin: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
 }
 
 .controls {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 16px;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
 }
 
 .toggle, .activeToggle {
-    padding: 8px 4px;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
-    border-bottom: 2px solid transparent;
-    color: var(--muted-ink);
-    font-weight: 500;
-    flex: 1;
-    text-align: center;
-    transition: all 0.2s ease;
+  padding: 8px 4px;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted-ink);
+  font-weight: 500;
+  flex: 1;
+  text-align: center;
+  transition: all 0.2s ease;
 }
 
 .activeToggle {
-    font-weight: 600;
-    color: var(--accent);
-    border-bottom: 2px solid var(--accent);
+  font-weight: 600;
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
 }
 
-/* Chart Specific Styles */
 .chartContainer {
-    display: flex;
-    margin-top: 24px;
-    height: 300px; /* Fixed height for the chart area */
+  display: flex;
+  height: 350px;
 }
 
 .yAxis {
-    position: relative;
-    width: 120px;
-    flex-shrink: 0;
-    font-size: 11px;
-    color: var(--muted-ink);
-    border-right: 1px solid var(--line);
-    padding-right: 8px;
-    margin-right: 8px;
+  position: relative;
+  flex-basis: 50px;
+  flex-shrink: 0;
+  height: calc(100% - 30px); /* Match height of chartArea */
+  box-sizing: border-box;
 }
 
 .yAxisLabel {
-    position: absolute;
-    top: -30px;
-    left: 0;
-    font-weight: 600;
-    font-size: 12px;
-    color: var(--ink);
+  position: absolute;
+  top: 9.1%;
+  transform: translateY(-50%);
+  left: 0;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--ink);
 }
 
 .yAxisTick {
-    position: absolute;
-    right: 8px;
-    transform: translateY(50%);
-    text-align: right;
-    width: 100%;
+  position: absolute;
+  width: 100%;
+  text-align: right;
+  font-size: 10px;
+  font-weight: 600;
+  padding-right: 8px;
+  transform: translateY(50%);
+}
+
+.mainChartColumn {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .chartArea {
-    position: relative;
-    width: 100%;
-    height: 100%;
+  position: relative;
+  width: 100%;
+  flex-grow: 1;
 }
 
 .gridLine {
     position: absolute;
     width: 100%;
-    border-top: 1px dotted var(--line);
     left: 0;
     z-index: 0;
+    border-top: 1px dotted;
+    opacity: 0.6;
+}
+
+.axisBreak {
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    right: 0; 
+    height: 15px;
+    background:
+        linear-gradient(65deg, transparent 46%, var(--bg-card) 46%, var(--bg-card) 48%, var(--line) 48%, var(--line) 52%, var(--bg-card) 52%, var(--bg-card) 54%, transparent 54%),
+        linear-gradient(-65deg, transparent 46%, var(--bg-card) 46%, var(--bg-card) 48%, var(--line) 48%, var(--line) 52%, var(--bg-card) 52%, var(--bg-card) 54%, transparent 54%);
 }
 
 .barsContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     justify-content: space-around;
-    height: 100%;
-    gap: 0.5%;
 }
 
 .barWrapper {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
     position: relative;
     height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
 }
 
 .bar {
-    width: 80%;
-    max-width: 40px;
-    background-color: lightgray;
-    border-radius: 4px 4px 0 0;
-    transition: height 0.4s ease-out, background-color 0.3s ease;
-    z-index: 1;
+  width: 60%;
+  max-width: 30px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.4s ease-out, background-color 0.3s ease;
 }
 
 .valueLabel {
-    color: var(--ink);
-    font-size: 11px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    height: 16px; /* Reserve space */
-    text-align: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  z-index: 2;
+}
+
+.xAxisLabels {
+    display: flex;
+    justify-content: space-around;
+    height: 30px;
+    padding-top: 4px;
+    border-top: 1px solid var(--line);
 }
 
 .segmentLabel {
-    font-size: 10px;
-    color: var(--muted-ink);
-    margin-top: 4px;
-    font-weight: 500;
+  flex: 1;
+  text-align: center;
+  font-size: 10px;
+  color: var(--muted-ink);
+  font-weight: 500;
 }

@@ -1,4 +1,3 @@
-/* src/components/ChangeMatrix.module.css */
 .matrixContainer {
     margin-top: 16px;
     padding-top: 16px;
@@ -21,16 +20,33 @@
     color: var(--muted-ink);
 }
 
-.toggle, .activeToggle {
+/* NEW: Style for the button group wrapper */
+.buttonGroup {
+    display: flex;
     border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden; /* Ensures child border-radii are clipped */
+}
+
+/* MODIFIED: Toggle buttons are now part of a segmented control */
+.toggle, .activeToggle {
     background-color: transparent;
     padding: 4px 10px;
-    border-radius: 6px;
     cursor: pointer;
     font-size: 12px;
     font-weight: 500;
     color: var(--muted-ink);
     transition: all 0.2s ease;
+    border: none; /* Remove individual borders */
+    border-right: 1px solid var(--line); /* Add separator line */
+    flex: 1; /* Ensure equal width */
+    min-width: 90px; /* Set a minimum width */
+    text-align: center;
+}
+
+/* Remove border from the last button in the group */
+.buttonGroup > button:last-child {
+    border-right: none;
 }
 
 .activeToggle {
@@ -42,24 +58,26 @@
 .matrixTable {
     width: 100%;
     border-collapse: collapse;
-    font-size: 12px;
+    font-size: 14px;
     table-layout: fixed;
 }
 
 .matrixTable th, .matrixTable td {
     border: 1px solid var(--line);
     text-align: center;
-    padding: 6px 4px;
-    min-width: 55px; /* Give more space for values */
-    height: 38px;
+    padding: 8px 4px;
+    min-width: 65px; 
+    height: 42px;
+    transition: background-color 0.3s ease;
 }
 
 .matrixTable th {
     font-weight: 600;
     background-color: #f8fafc;
     font-size: 10px;
-    color: var(--muted-ink);
+    color: var(--dark-ink); /* UPDATED: Black text for readability */
     padding: 4px;
+    white-space: nowrap;
 }
 
 .metricHeader {
@@ -67,33 +85,36 @@
     font-weight: 600;
     width: 120px;
     padding-left: 8px !important;
+    background-color: #f8fafc;
+    color: var(--dark-ink);
 }
 
-.cellContent {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
+.matrixTable td > span {
+    font-weight: 600;
 }
 
-.cellContent > span:first-child {
-    font-size: 16px;
-    font-weight: bold;
-    line-height: 1;
+/* Background & Text Color Classes */
+.bgDefault {
+    background-color: #ffffff;
+    color: #111827;
 }
-.worsened { color: #d62828; }
-.improved { color: #1b9e77; }
-.stable { color: #64748b; }
-
-.valueText {
-    font-size: 11px;
-    font-weight: 500;
+.bgStable {
+    background-color: #f3f4f6;
     color: #4b5563;
 }
-
-/* Cell Background Colors for Absolute Risk */
-.riskSevere { background-color: #fee2e2; }
-.riskModerate { background-color: #ffedd5; }
-.riskMild { background-color: #fef3c7; }
-.riskMinimal { background-color: #dcfce7; }
-.riskNone { background-color: #f8fafc; }
+.bgFavorable {
+    background-color: #059669;
+    color: #ffffff;
+}
+.bgStablePositive {
+    background-color: #ecfdf5;
+    color: #065f46;
+}
+.bgUnfavorableLowRisk {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+.bgUnfavorableHighRisk {
+    background-color: #b91c1c;
+    color: #ffffff;
+}

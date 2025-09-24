@@ -1,110 +1,155 @@
-/* src/components/SegmentMap.module.css */
 .container {
-    padding: 16px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background-color: white;
-    margin-top: 16px;
-}
-.controls {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 16px;
-}
-.toggle {
-    padding: 8px 4px;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
-    border-bottom: 2px solid transparent;
-    color: var(--muted-ink);
-    font-weight: 500;
-    flex: 1;
-    text-align: center;
-    transition: all 0.2s ease;
-}
-.activeToggle {
-    padding: 8px 4px;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
-    font-weight: 600;
-    color: var(--accent, #2563eb);
-    border-bottom: 2px solid var(--accent, #2563eb);
-    flex: 1;
-    text-align: center;
-}
-.mapArea {
-    position: relative;
-    width: 100%;
-}
-.mapBackground {
-    position: relative;
-    width: 100%;
-    background-image: url('/images/axial-coronary-anatomy.png');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-.legend {
-    position: absolute;
-    bottom: 8px;
-    left: 8px;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 8px;
-    border-radius: 6px;
-    font-size: 11px;
-    border: 1px solid var(--line);
-    backdrop-filter: blur(2px);
-    width: 180px;
-}
-.legend h4 {
-    margin: 0 0 8px 0;
-    font-size: 12px;
-}
-.legendItem {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 4px;
-}
-.legendItem span {
-    width: 10px;
-    height: 10px;
-    border-radius: 2px;
-}
-.scoreboardContainer {
-    position: absolute;
-    top: 8px;
-    /* THIS IS THE NUMBER TO EDIT FOR HORIZONTAL POSITION */
-    left: 650px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-size: 11px;
-    width: 280px;
-}
-.scoreboard {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 12px;
-    border-radius: 6px;
-    border: 1px solid var(--line);
-    backdrop-filter: blur(2px);
-    width: 100%;
-}
-.scoreboard h3 {
-    margin: 0 0 4px 0;
-    font-size: 16px;
-    font-weight: 600;
-}
-.scoreboard p {
-    margin: 0;
-    color: var(--muted-ink);
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background-color: var(--bg-card);
+  backdrop-filter: blur(10px);
 }
 
-/* Tooltip styles remain unchanged */
+.controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+}
+
+.toggle, .activeToggle {
+  padding: 8px 4px;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted-ink);
+  font-weight: 500;
+  flex: 1;
+  text-align: center;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.activeToggle {
+  font-weight: 600;
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+}
+
+.mapArea {
+  position: relative;
+  width: 100%;
+}
+
+.mapBackground {
+  position: relative;
+  width: 100%;
+}
+
+/* Scoreboard Styles */
+.scoreboard {
+  background-color: rgba(11, 17, 32, 0.7);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  backdrop-filter: blur(5px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.meterGroup p {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted-ink);
+}
+
+.meterBoxes {
+  display: flex;
+  gap: 4px;
+  height: 28px;
+}
+
+.meter, .activeMeter {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.meter {
+  background-color: var(--risk-neutral-gray);
+  color: var(--muted-ink);
+}
+
+.activeMeter {
+  background-color: var(--meter-color);
+  color: white;
+}
+
+.stenosisGroup {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.stenosisBox {
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+  color: white;
+}
+
+.stenosisLabel {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stenosisRange {
+  font-size: 10px;
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+
+.stenosisCount {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Legend Styles */
+.legend {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background-color: rgba(26, 32, 44, 0.7);
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  border: 1px solid var(--line);
+  backdrop-filter: blur(5px);
+  width: 160px; /* UPDATED from 180px */
+}
+.legend h4 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+}
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.legendItem span {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+/* Tooltip styles */
 .tooltip {
   position: fixed;
   background-color: rgba(30, 41, 59, 0.9);

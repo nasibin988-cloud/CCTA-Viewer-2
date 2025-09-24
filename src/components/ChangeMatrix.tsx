@@ -1,11 +1,6 @@
-// src/components/ChangeMatrix.tsx
 import React, { useMemo, useState } from 'react';
 import { CctaReport, Segment } from '@/types/ccta';
 import styles from './ChangeMatrix.module.css';
-import { 
-    getStenosisColor, getPavColor, getHrpColor, getLrncVolumeColor, 
-    getNcpVolumeColor, getCpVolumeColor 
-} from '@/lib/thresholds';
 import { formatNumber } from '@/lib/compute';
 
 interface ChangeMatrixProps {
@@ -13,76 +8,108 @@ interface ChangeMatrixProps {
     priorReport: CctaReport;
 }
 
-type DisplayMode = 'absolute' | 'percentage';
-const SEGMENT_ORDER: number[] = [5, 11, 13, 15, 18, 12, 14, 6, 7, 9, 10, 8, 1, 2, 3, 4, 16, 17];
+type DisplayMode = 'annualized' | 'absolute' | 'percentage';
+
+const SEGMENT_ORDER: number[] = [
+    0, // All Vessel
+    5, 6, 7, 8, 9, 10, 17, // LM & LAD chain
+    11, 12, 13, 14, 18, 15, // LCx chain
+    1, 2, 3, 4, 16 // RCA chain
+];
+
 const SEGMENT_NAMES: { [key: number]: string } = {
-    5: "LM", 11: "pLCx", 13: "dLCx", 15: "L-PDA", 18: "Ramus", 12: "OM1", 14: "OM2",
-    6: "pLAD", 7: "mLAD", 9: "D1", 10: "D2", 8: "dLAD", 1: "pRCA", 2: "mRCA",
-    3: "dRCA", 4: "R-PDA", 16: "R-PLB", 17: "L-PLB"
+    0: "All Vessel", 5: "LM", 6: "pLAD", 7: "mLAD", 8: "dLAD", 9: "D1", 10: "D2", 17: "Ramus",
+    11: "pLCx", 12: "OM1", 13: "dLCx", 14: "OM2", 18: "L-PLB", 15: "L-PDA",
+    1: "pRCA", 2: "mRCA", 3: "dRCA", 4: "R-PDA", 16: "R-PLB"
 };
-const METRICS = ['Stenosis', 'Burden', 'HRP', 'LRNC_Volume', 'NCP_Volume', 'CP_Volume'] as const;
+
+const METRICS = ['LRNC_Volume', 'NCP_Volume', 'CP_Volume', 'TPV', 'PAV', 'FFRct', 'Stenosis'] as const;
 type Metric = typeof METRICS[number];
 
-const getValue = (metric: Metric, segment?: Segment): number => {
-    if (!segment) return 0;
+const isHighRisk = (metric: Metric, value: number): boolean => {
+    if (value === 0) return false;
     switch (metric) {
-        case 'Stenosis': return segment.stenosis_pct;
-        case 'Burden': return segment.pav_pct;
-        case 'HRP': return segment.hrp.length;
-        case 'LRNC_Volume': return segment.lrnc_mm3;
-        case 'NCP_Volume': return segment.ncp_mm3;
-        case 'CP_Volume': return segment.cp_mm3;
-        default: return 0;
+        case 'Stenosis': return value >= 50;
+        case 'PAV': return value > 5;
+        case 'FFRct': return value <= 0.75;
+        case 'LRNC_Volume': return value >= 15;
+        case 'NCP_Volume': return value >= 50;
+        case 'CP_Volume': return value >= 150;
+        case 'TPV': return value >= 75;
+        default: return false;
     }
 };
-
-const getAbsoluteRiskClass = (metric: Metric, value: number): string => {
-    const colorVar = {
-        'Stenosis': getStenosisColor(value),
-        'Burden': getPavColor(value),
-        'HRP': getHrpColor(value),
-        'LRNC_Volume': getLrncVolumeColor(value),
-        'NCP_Volume': getNcpVolumeColor(value),
-        'CP_Volume': getCpVolumeColor(value),
-    }[metric];
-
-    switch (colorVar) {
-        case '--risk-red': return styles.riskSevere;
-        case '--risk-orange': return styles.riskModerate;
-        case '--risk-yellow': return styles.riskMild;
-        case '--risk-green': return styles.riskMinimal;
-        default: return styles.riskNone;
-    }
-};
-
-const getRelativeChangeIcon = (change: number): React.ReactElement => {
-    if (Math.abs(change) < 1e-6) return <span className={styles.stable}>–</span>;
-    if (change > 0) return <span className={styles.worsened}>▲</span>;
-    return <span className={styles.improved}>▼</span>;
-};
-
 
 export const ChangeMatrix: React.FC<ChangeMatrixProps> = ({ currentReport, priorReport }) => {
     const [displayMode, setDisplayMode] = useState<DisplayMode>('absolute');
-    const currentSegments = useMemo(() => new Map(currentReport.vessels.flatMap(v => v.segments).map(s => [s.segId, s])), [currentReport]);
-    const priorSegments = useMemo(() => new Map(priorReport.vessels.flatMap(v => v.segments).map(s => [s.segId, s])), [priorReport]);
+    
+    const yearsBetweenScans = useMemo(() => {
+        const currentDate = new Date(currentReport.patient.studyDate).getTime();
+        const priorDate = new Date(priorReport.patient.studyDate).getTime();
+        if (!currentDate || !priorDate) return 1;
+        const diffInYears = (currentDate - priorDate) / (1000 * 60 * 60 * 24 * 365.25);
+        return diffInYears > 0 ? diffInYears : 1;
+    }, [currentReport, priorReport]);
+
+    const allCurrentSegments = useMemo(() => currentReport.vessels.flatMap(v => v.segments), [currentReport]);
+    const allPriorSegments = useMemo(() => priorReport.vessels.flatMap(v => v.segments), [priorReport]);
+    
+    const getValue = (metric: Metric, segId: number, reportType: 'current' | 'prior'): number => {
+        const report = reportType === 'current' ? currentReport : priorReport;
+        const allSegments = reportType === 'current' ? allCurrentSegments : allPriorSegments;
+        
+        if (segId !== 0) {
+            const segment = allSegments.find(s => s.segId === segId);
+            if (!segment) return 0;
+            switch (metric) {
+                case 'Stenosis': return segment.stenosis_pct;
+                case 'PAV': return segment.pav_pct;
+                case 'FFRct': return segment.ffrct ?? 0;
+                case 'LRNC_Volume': return segment.lrnc_mm3;
+                case 'NCP_Volume': return segment.ncp_mm3;
+                case 'CP_Volume': return segment.cp_mm3;
+                case 'TPV': return segment.lrnc_mm3 + segment.ncp_mm3 + segment.cp_mm3;
+                default: return 0;
+            }
+        } else {
+            switch (metric) {
+                case 'Stenosis': return Math.max(0, ...allSegments.map(s => s.stenosis_pct));
+                case 'FFRct': const ffrcts = allSegments.map(s => s.ffrct ?? 1.0).filter(f => f > 0); return ffrcts.length > 0 ? Math.min(...ffrcts) : 0;
+                case 'PAV': return report.global.pav_pct;
+                case 'LRNC_Volume': return allSegments.reduce((sum, s) => sum + s.lrnc_mm3, 0);
+                case 'NCP_Volume': return allSegments.reduce((sum, s) => sum + s.ncp_mm3, 0);
+                case 'CP_Volume': return allSegments.reduce((sum, s) => sum + s.cp_mm3, 0);
+                case 'TPV': return report.global.tpv_mm3;
+                default: return 0;
+            }
+        }
+    };
 
     return (
         <div className={styles.matrixContainer}>
             <div className={styles.toggleContainer}>
                 <span>Show Change:</span>
-                <button onClick={() => setDisplayMode('absolute')} className={displayMode === 'absolute' ? styles.activeToggle : styles.toggle}>
-                    Absolute
-                </button>
-                <button onClick={() => setDisplayMode('percentage')} className={displayMode === 'percentage' ? styles.activeToggle : styles.toggle}>
-                    %
-                </button>
+                <div className={styles.buttonGroup}>
+                    <button onClick={() => setDisplayMode('absolute')} className={displayMode === 'absolute' ? styles.activeToggle : styles.toggle}>
+                        Absolute
+                    </button>
+                    <button onClick={() => setDisplayMode('percentage')} className={displayMode === 'percentage' ? styles.activeToggle : styles.toggle}>
+                        Percentage
+                    </button>
+                    <button onClick={() => setDisplayMode('annualized')} className={displayMode === 'annualized' ? styles.activeToggle : styles.toggle}>
+                        Annualized
+                    </button>
+                </div>
             </div>
             <table className={styles.matrixTable}>
                 <thead>
                     <tr>
                         <th className={styles.metricHeader}>Metric</th>
-                        {SEGMENT_ORDER.map(segId => <th key={segId}>{SEGMENT_NAMES[segId] || segId}</th>)}
+                        {SEGMENT_ORDER.map(segId => {
+                             const segment = allCurrentSegments.find(s => s.segId === segId);
+                             if (segId !== 0 && !segment) return null;
+                             return <th key={segId}>{SEGMENT_NAMES[segId] || segId}</th>
+                        })}
                     </tr>
                 </thead>
                 <tbody>
@@ -90,41 +117,56 @@ export const ChangeMatrix: React.FC<ChangeMatrixProps> = ({ currentReport, prior
                         <tr key={metric}>
                             <td className={styles.metricHeader}>{metric.replace('_', ' ')}</td>
                             {SEGMENT_ORDER.map(segId => {
-                                const currentSegment = currentSegments.get(segId);
-                                const priorSegment = priorSegments.get(segId);
-                                
-                                const currentValue = getValue(metric, currentSegment);
-                                const priorValue = getValue(metric, priorSegment);
+                                const currentSegment = allCurrentSegments.find(s => s.segId === segId);
+                                if (segId !== 0 && !currentSegment) return null;
 
-                                const backgroundClass = getAbsoluteRiskClass(metric, currentValue);
+                                const currentValue = getValue(metric, segId, 'current');
+                                const priorValue = getValue(metric, segId, 'prior');
+                                
                                 const absoluteChange = currentValue - priorValue;
-                                const icon = getRelativeChangeIcon(absoluteChange);
-                                
-                                let valueText = '';
-                                const noChange = Math.abs(absoluteChange) < 1e-6;
+                                const isFavorable = (metric === 'FFRct' || metric === 'CP_Volume') ? absoluteChange > 0 : absoluteChange < 0;
 
-                                if (!noChange) {
-                                    if (displayMode === 'absolute' || metric === 'HRP') {
-                                        const sign = absoluteChange > 0 ? '+' : '';
-                                        const decimals = (metric === 'Stenosis' || metric === 'HRP') ? 0 : 1;
+                                let cellClass = styles.bgDefault;
+                                if (Math.abs(currentValue) < 1e-6 && Math.abs(priorValue) < 1e-6) {
+                                    cellClass = styles.bgStable;
+                                } else if (Math.abs(absoluteChange) < 1e-6) {
+                                    cellClass = styles.bgStablePositive;
+                                } else if (isFavorable) {
+                                    cellClass = styles.bgFavorable;
+                                } else {
+                                    cellClass = isHighRisk(metric, currentValue) 
+                                        ? styles.bgUnfavorableHighRisk
+                                        : styles.bgUnfavorableLowRisk;
+                                }
+
+                                let valueText = '–';
+                                const noPriorData = Math.abs(priorValue) < 1e-6 && Math.abs(currentValue) > 1e-6;
+
+                                if (cellClass !== styles.bgStable) {
+                                    const sign = absoluteChange > 0 ? '+' : '';
+                                    const decimals = (metric === 'Stenosis' || metric === 'PAV') ? 0 : (metric === 'FFRct' ? 2 : 1);
+                                    
+                                    if (displayMode === 'annualized') {
+                                        const annualizedChange = absoluteChange / yearsBetweenScans;
+                                        valueText = `${annualizedChange > 0 ? '+' : ''}${formatNumber(annualizedChange, decimals)}`;
+                                    } else if (displayMode === 'absolute') {
                                         valueText = `${sign}${formatNumber(absoluteChange, decimals)}`;
-                                    } else { // Percentage Mode
-                                        if (priorValue === 0) {
-                                            valueText = 'New'; // Handle new plaque appearance
-                                        } else {
+                                    } else {
+                                        if (noPriorData) {
+                                            valueText = 'New';
+                                        } else if (Math.abs(priorValue) < 1e-6) {
+                                            valueText = '∞'; // Avoid division by zero
+                                        }
+                                        else {
                                             const percentageChange = (absoluteChange / priorValue) * 100;
-                                            const sign = percentageChange > 0 ? '+' : '';
-                                            valueText = `${sign}${formatNumber(percentageChange, 0)}%`;
+                                            valueText = `${percentageChange > 0 ? '+' : ''}${formatNumber(percentageChange, 0)}%`;
                                         }
                                     }
                                 }
-
+                                
                                 return (
-                                    <td key={segId} className={backgroundClass}>
-                                        <div className={styles.cellContent}>
-                                            {icon}
-                                            <span className={styles.valueText}>{valueText}</span>
-                                        </div>
+                                    <td key={segId} className={cellClass}>
+                                        <span>{valueText}</span>
                                     </td>
                                 );
                             })}

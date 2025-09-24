@@ -1,7 +1,9 @@
+// src/types/ccta.ts
+
 export type Dominance = "Right" | "Left" | "Co";
 export type QualityFlag = "motion" | "blooming" | "stent" | "heavyCa" | "limitedCoverage";
 export type HRPFeature = "LAP" | "PR" | "SC" | "NRS";
-export type VesselId = "RCA" | "LM_LAD" | "LCx";
+export type VesselId = "RCA" | "LM_LAD" | "LCx" | "WHOLE_HEART";
 
 export interface Patient {
   name: string;
@@ -26,7 +28,6 @@ export interface GlobalMetrics {
   tpv_mm3: number;
   pav_pct: number;
   lap_pct: number;
-  hrp_count: number;
   sis: number;
   cac_agatston?: number;
 }
@@ -37,13 +38,12 @@ export interface Segment {
   length_mm: number;
   stenosis_pct: number;
   ri: number;
-  hrp: HRPFeature[];
+  ffrct?: number;
   lrnc_mm3: number;
   ncp_mm3: number;
   cp_mm3: number;
   pav_pct: number;
   lap_pct: number;
-  ffrct?: number;
 }
 
 export interface Vessel {
@@ -68,6 +68,7 @@ export interface CctaReport {
   vessels: Vessel[];
   priorStudy?: Omit<CctaReport, 'priorStudy'>;
 }
-export type PlaqueVolumeMode = "LRNC_Volume" | "NCP_Volume" | "CP_Volume";
 
-export type MapMode = "Stenosis" | "HRP" | "Composition" | "Burden"; // Composition will now be the parent mode
+export type PlaqueVolumeMode = "LRNC_Volume" | "NCP_Volume" | "CP_Volume" | "TPV" | "PAV";
+
+export type MapMode = "Stenosis" | "FFRct" | "Composition" | "Lesions" | "Interactive" | "Systems";

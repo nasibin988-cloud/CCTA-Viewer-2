@@ -1,125 +1,248 @@
-// src/components/SerialComparisonChart.tsx
 import React, { useState, useMemo } from 'react';
-import { CctaReport, PlaqueVolumeMode, Segment } from '@/types/ccta';
+import { CctaReport, PlaqueVolumeMode, Segment, MapMode } from '@/types/ccta';
 import styles from './SerialComparisonChart.module.css';
-import { getStenosisColor, getHrpColor, getCompositionColor, getLrncVolumeColor, getNcpVolumeColor, getCpVolumeColor, getPavColor, RiskColorVar, CompositionColorVar } from '@/lib/thresholds';
+import { 
+    getStenosisColor, getFfrctColor, getLrncVolumeColor, getNcpVolumeColor, 
+    getCpVolumeColor, getPavColor, getTpvColor, RiskColorVar, getGlobalTpvColor 
+} from '@/lib/thresholds';
 import { formatNumber } from '@/lib/compute';
-import { ChangeMatrix } from './ChangeMatrix'; // Make sure ChangeMatrix is imported
+import { ChangeMatrix } from './ChangeMatrix';
 
 const VESSEL_SEGMENTS = {
   RCA: [1, 2, 3, 4, 16],
-  LM_LAD: [5, 6, 7, 8, 9, 10],
-  LCx: [11, 12, 13, 14, 15, 17, 18],
+  LM_LAD: [5, 6, 7, 8, 9, 10, 17],
+  LCx: [11, 12, 13, 14, 18, 15],
 };
-type VesselFilter = "Whole Heart" | "RCA" | "LM+LAD" | "LCx";
-type MapMode = "Stenosis" | "HRP" | "Composition" | "Burden";
-const SEGMENT_ORDER: number[] = [5, 11, 13, 15, 18, 12, 14, 6, 7, 9, 10, 8, 1, 2, 3, 4, 16, 17];
+
+type ViewMode = "All Vessels" | "RCA" | "LM+LAD" | "LCx" | "Systems";
+
+const SEGMENT_ORDER: number[] = [
+    5, 6, 7, 8, 9, 10, 17, // LM & LAD chain
+    11, 12, 13, 14, 18, 15, // LCx chain
+    1, 2, 3, 4, 16 // RCA chain
+];
+
+// UPDATED: Reordered the columns for the "Systems" view
+const SYSTEMS_ORDER: ("Whole Heart" | "LM+LAD" | "LCx" | "RCA")[] = ["Whole Heart", "LM+LAD", "LCx", "RCA"];
+
 const SEGMENT_NAMES: { [key: number]: string } = {
-    5: "LM", 11: "pLCx", 13: "dLCx", 15: "L-PDA", 18: "Ramus", 12: "OM1", 14: "OM2",
-    6: "pLAD", 7: "mLAD", 9: "D1", 10: "D2", 8: "dLAD", 1: "pRCA", 2: "mRCA",
-    3: "dRCA", 4: "R-PDA", 16: "R-PLB", 17: "L-PLB"
-};
-const CHART_CONFIG = {
-    Stenosis: { title: "Stenosis (%)", max: 100, unit: '%' },
-    Burden: { title: "Plaque Burden (PAV %)", max: 40, unit: '%' },
-    HRP: { title: "High-Risk Plaque Features", max: 2, unit: '' },
-    LRNC_Volume: { title: "LRNC Volume (mm³)", max: 40, unit: ' mm³' },
-    NCP_Volume: { title: "NCP Volume (mm³)", max: 120, unit: ' mm³' },
-    CP_Volume: { title: "CP Volume (mm³)", max: 350, unit: ' mm³' }
+    5: "LM", 6: "pLAD", 7: "mLAD", 8: "dLAD", 9: "D1", 10: "D2", 17: "Ramus",
+    11: "pLCx", 12: "OM1", 13: "dLCx", 14: "OM2", 18: "L-PLB", 15: "L-PDA",
+    1: "pRCA", 2: "mRCA", 3: "dRCA", 4: "R-PDA", 16: "R-PLB"
 };
 
-interface BarInfo { value: number; color: RiskColorVar | CompositionColorVar; label: string; }
+const CHART_CONFIG: { [key: string]: { title: string; max: number; min?: number; thresholds: {v: number; c: RiskColorVar}[] } } = {
+    Stenosis: { title: "Stenosis (%)", max: 100, thresholds: [ {v: 25, c: '--risk-yellow'}, {v: 50, c: '--risk-orange'}, {v: 70, c: '--risk-red'} ]},
+    FFRct: { title: "FFRct", max: 1.0, min: 0.5, thresholds: [ {v: 0.70, c: '--risk-red'}, {v: 0.75, c: '--risk-orange'}, {v: 0.80, c: '--risk-yellow'}, {v: 0.85, c: '--risk-green'} ]},
+    LRNC_Volume: { title: "LRNC Volume (mm³)", max: 36, thresholds: [ {v: 5, c: '--risk-yellow'}, {v: 15, c: '--risk-orange'}, {v: 30, c: '--risk-red'} ]},
+    NCP_Volume: { title: "NCP Volume (mm³)", max: 120, thresholds: [ {v: 20, c: '--risk-yellow'}, {v: 50, c: '--risk-orange'}, {v: 100, c: '--risk-red'} ]},
+    CP_Volume: { title: "CP Volume (mm³)", max: 360, thresholds: [ {v: 50, c: '--risk-yellow'}, {v: 150, c: '--risk-orange'}, {v: 300, c: '--risk-red'} ]},
+    TPV: { title: "TPV (mm³)", max: 180, thresholds: [ {v: 30, c: '--risk-yellow'}, {v: 75, c: '--risk-orange'}, {v: 150, c: '--risk-red'} ]},
+    PAV: { title: "PAV (%)", max: 18, thresholds: [ {v: 5, c: '--risk-orange'}, {v: 15, c: '--risk-red'} ]},
+};
 
-const SerialChartDisplay: React.FC<{
-    currentReport: CctaReport; priorReport: CctaReport; mode: MapMode;
-    compositionSubMode?: PlaqueVolumeMode; vesselFilter: VesselFilter;
-}> = ({ currentReport, priorReport, mode, compositionSubMode, vesselFilter }) => {
-    const currentSegments = useMemo(() => currentReport.vessels.flatMap(v => v.segments), [currentReport]);
-    const priorSegments = useMemo(() => priorReport.vessels.flatMap(v => v.segments), [priorReport]);
-    const configKey = mode === 'Composition' ? compositionSubMode : mode;
-    const config = CHART_CONFIG[configKey as keyof typeof CHART_CONFIG];
+const getChangeLabel = (change: number, metric: any) => {
+    if (Math.abs(change) < 1e-6) return null;
+    const sign = change > 0 ? '+' : '';
+    const decimals = (metric === 'Stenosis' || (metric === 'TPV' && metric !== 'Systems')) ? 0 : (metric === 'FFRct' ? 2 : 1);
+    return `${sign}${formatNumber(change, decimals)}`;
+};
+
+const getChangeFavorability = (change: number, metric: any): 'favorable' | 'unfavorable' | 'neutral' => {
+    if (Math.abs(change) < 1e-6) return 'neutral';
     
-    const displayedSegments = useMemo(() => {
-        if (vesselFilter === 'Whole Heart') return SEGMENT_ORDER;
-        const key = vesselFilter === 'LM+LAD' ? 'LM_LAD' : vesselFilter;
-        return SEGMENT_ORDER.filter(id => VESSEL_SEGMENTS[key as keyof typeof VESSEL_SEGMENTS].includes(id));
-    }, [vesselFilter]);
+    let isFavorable: boolean;
+    if (metric === 'FFRct' || metric === 'CP_Volume') {
+        isFavorable = change > 0;
+    } else {
+        isFavorable = change < 0;
+    }
+    return isFavorable ? 'favorable' : 'unfavorable';
+};
 
-    const getBarInfo = (segment: Segment | undefined): BarInfo => {
-        const noPlaqueInfo: BarInfo = { value: 0, color: '--risk-neutral-gray', label: '0' };
-        if (!segment) return noPlaqueInfo;
-        switch (configKey) {
-            case 'Stenosis': return { value: segment.stenosis_pct, color: getStenosisColor(segment.stenosis_pct), label: formatNumber(segment.stenosis_pct, 0) };
-            case 'Burden': return { value: segment.pav_pct, color: getPavColor(segment.pav_pct), label: formatNumber(segment.pav_pct, 1) };
-            case 'HRP': return { value: segment.hrp.length, color: getHrpColor(segment.hrp.length), label: segment.hrp.join(', ') || '0' };
-            case 'LRNC_Volume': return { value: segment.lrnc_mm3, color: getLrncVolumeColor(segment.lrnc_mm3), label: formatNumber(segment.lrnc_mm3, 1) };
-            case 'NCP_Volume': return { value: segment.ncp_mm3, color: getNcpVolumeColor(segment.ncp_mm3), label: formatNumber(segment.ncp_mm3, 1) };
-            case 'CP_Volume': return { value: segment.cp_mm3, color: getCpVolumeColor(segment.cp_mm3), label: formatNumber(segment.cp_mm3, 1) };
-            default: return noPlaqueInfo;
+const ChartDisplay: React.FC<{
+    currentReport: CctaReport; priorReport: CctaReport; metricMode: MapMode;
+    compositionSubMode?: PlaqueVolumeMode; viewMode: ViewMode;
+}> = ({ currentReport, priorReport, metricMode, compositionSubMode, viewMode }) => {
+
+    const configKey = metricMode === 'Composition' ? compositionSubMode : metricMode;
+    const config = CHART_CONFIG[configKey as keyof typeof CHART_CONFIG];
+    const HEADROOM_FACTOR = 1.1;
+
+    const chartData = useMemo(() => {
+        const getSegmentValue = (segment: Segment | undefined, key: any): number => {
+            if (!segment) return 0;
+            switch (key) {
+                case 'Stenosis': return segment.stenosis_pct;
+                case 'FFRct': return segment.ffrct ?? 0;
+                case 'LRNC_Volume': return segment.lrnc_mm3;
+                case 'NCP_Volume': return segment.ncp_mm3;
+                case 'CP_Volume': return segment.cp_mm3;
+                case 'TPV': return segment.lrnc_mm3 + segment.ncp_mm3 + segment.cp_mm3;
+                case 'PAV': return segment.pav_pct;
+                default: return 0;
+            }
+        };
+        const getSystemValue = (report: CctaReport | Omit<CctaReport, 'priorStudy'>, system: string, key: any): number => {
+            const segmentsToAnalyze = (report.vessels as any[]).flatMap(v => v.segments).filter((s: Segment) => {
+                if (system === "Whole Heart") return true;
+                const vesselId = system === 'LM+LAD' ? 'LM_LAD' : system;
+                return VESSEL_SEGMENTS[vesselId as keyof typeof VESSEL_SEGMENTS]?.includes(s.segId);
+            });
+            if (!segmentsToAnalyze.length) return 0;
+            switch(key) {
+                case 'Stenosis': return Math.max(...segmentsToAnalyze.map(s => s.stenosis_pct));
+                case 'FFRct': return Math.min(...segmentsToAnalyze.filter(s => s.ffrct !== undefined && s.ffrct > 0).map(s => s.ffrct as number)) || 0;
+                case 'PAV': 
+                    if(system === "Whole Heart") return report.global.pav_pct;
+                    const vesselId = system === 'LM+LAD' ? 'LM_LAD' : system;
+                    return report.vessels.find(v => v.id === vesselId)?.pav_pct ?? 0;
+                default: return segmentsToAnalyze.reduce((acc, s) => acc + getSegmentValue(s, key), 0);
+            }
+        };
+
+        if (viewMode === 'Systems') {
+            return SYSTEMS_ORDER.map(systemName => ({ key: systemName, label: systemName, priorValue: getSystemValue(priorReport, systemName, configKey), currentValue: getSystemValue(currentReport, systemName, configKey) }));
+        }
+        
+        const segmentMap = new Map<number, {prior?: Segment, current?: Segment}>();
+        priorReport.vessels.flatMap(v => v.segments).forEach(s => segmentMap.set(s.segId, { prior: s }));
+        currentReport.vessels.flatMap(v => v.segments).forEach(s => segmentMap.set(s.segId, { ...segmentMap.get(s.segId), current: s }));
+
+        const orderedSegmentList = SEGMENT_ORDER
+            .filter(id => viewMode === 'All Vessels' || VESSEL_SEGMENTS[viewMode.replace('+', '_') as keyof typeof VESSEL_SEGMENTS]?.includes(id))
+            .filter(id => segmentMap.has(id));
+
+        return orderedSegmentList.map(segId => {
+            const { prior, current } = segmentMap.get(segId)!;
+            return {
+                key: segId,
+                label: SEGMENT_NAMES[segId] || String(segId),
+                priorValue: getSegmentValue(prior, configKey),
+                currentValue: getSegmentValue(current, configKey),
+            };
+        });
+    }, [viewMode, configKey, currentReport, priorReport]);
+
+    if (!config) return <div style={{ height: '450px', display: 'grid', placeContent: 'center' }}><p>Select a metric to view the chart.</p></div>;
+
+    const getColor = (value: number) => {
+        switch(configKey) {
+            case 'Stenosis': return getStenosisColor(value);
+            case 'FFRct': return getFfrctColor(value);
+            case 'LRNC_Volume': return getLrncVolumeColor(value);
+            case 'NCP_Volume': return getNcpVolumeColor(value);
+            case 'CP_Volume': return getCpVolumeColor(value);
+            case 'TPV': return viewMode === 'Systems' ? getGlobalTpvColor(value) : getTpvColor(value);
+            case 'PAV': return getPavColor(value);
+            default: return '--risk-dark-green';
         }
     };
-    
-    if (!config) return <div className={styles.chartArea}><p>Select a Composition type.</p></div>;
+
+    const isFfrct = configKey === 'FFRct';
+    const range = isFfrct ? config.max - (config.min || 0) : config.max;
 
     return (
-        <div className={`${styles.chartArea} ${vesselFilter !== 'Whole Heart' ? styles.filteredView : ''}`}>
-            {displayedSegments.map(segId => {
-                const priorData = getBarInfo(priorSegments.find(s => s.segId === segId));
-                const currentData = getBarInfo(currentSegments.find(s => s.segId === segId));
-                
-                const unfavorable = currentData.value > priorData.value + 1e-6;
-                const noChange = Math.abs(priorData.value - currentData.value) < 1e-6;
-                const backgroundClass = noChange ? '' : (unfavorable ? styles.unfavorableBackground : styles.favorableBackground);
-                
-                const priorHeight = Math.min(100, (priorData.value / config.max) * 100);
-                const currentHeight = Math.min(100, (currentData.value / config.max) * 100);
-
-                const change = currentData.value - priorData.value;
-                let changeLabel = '';
-                if (configKey !== 'HRP' && !noChange) {
-                    const sign = change > 0 ? '+' : '';
-                    const decimals = configKey === 'Stenosis' ? 0 : 1;
-                    changeLabel = `(${sign}${formatNumber(change, decimals)})`;
-                }
-
-                return (
-                    <div key={segId} className={`${styles.barPairWrapper} ${backgroundClass}`}>
-                        <div className={styles.valueLabel}>{priorData.label}</div>
-                        <div className={styles.valueLabel}>{currentData.label}</div>
-                        <div className={styles.changeLabel}>{changeLabel}</div>
-                        <div className={styles.barPair}>
-                            <div className={styles.bar} style={{ height: `${priorHeight}%`, backgroundColor: `var(${priorData.color})` }}></div>
-                            <div className={styles.bar} style={{ height: `${currentHeight}%`, backgroundColor: `var(${currentData.color})` }}></div>
+        <div className={styles.chartContainer}>
+            <div className={styles.yAxis}>
+                 <div className={styles.yAxisLabel}>{config.title}</div>
+                 {config.thresholds.map(line => {
+                    const logicalBottom = isFfrct ? ((line.v - (config.min || 0)) / range) * 100 : (line.v / config.max) * 100;
+                    const visualBottom = logicalBottom / HEADROOM_FACTOR;
+                    if (visualBottom <= 0 || visualBottom > 100) return null;
+                    return (
+                        <div key={line.v} className={styles.yAxisTick} style={{ bottom: `${visualBottom}%` }}>
+                           <span style={{ color: `var(${line.c})` }}>{line.v}</span>
                         </div>
-                        <div className={styles.segmentLabel}>{SEGMENT_NAMES[segId] || segId}</div>
+                    );
+                })}
+            </div>
+            <div className={styles.mainChartColumn}>
+                <div className={styles.chartArea}>
+                    {config.thresholds.map(line => {
+                        const logicalBottom = isFfrct ? ((line.v - (config.min || 0)) / range) * 100 : (line.v / config.max) * 100;
+                        const visualBottom = logicalBottom / HEADROOM_FACTOR;
+                        if (visualBottom <= 0 || visualBottom > 100) return null;
+                        return <div key={line.v} className={styles.gridLine} style={{ bottom: `${visualBottom}%`, borderTopColor: `var(${line.c})` }}></div>
+                    })}
+                    {isFfrct && <div className={styles.axisBreak}></div>}
+                    
+                    <div className={styles.barsContainer}>
+                        {chartData.map((data, index) => {
+                            const change = data.currentValue - data.priorValue;
+                            const changeText = getChangeLabel(change, configKey);
+                            const favorability = getChangeFavorability(change, configKey);
+                            const decimals = (configKey === 'Stenosis' || (configKey === 'TPV' && viewMode === 'Systems')) ? 0 : (configKey === 'FFRct' ? 2 : 1);
+
+                            const cappedPrior = Math.min(data.priorValue, config.max);
+                            const valueForPriorHeight = isFfrct ? cappedPrior - (config.min || 0) : cappedPrior;
+                            const logicalPriorHeight = Math.max(0, (valueForPriorHeight / range) * 100);
+                            const visualPriorHeight = logicalPriorHeight / HEADROOM_FACTOR;
+
+                            const cappedCurrent = Math.min(data.currentValue, config.max);
+                            const valueForCurrentHeight = isFfrct ? cappedCurrent - (config.min || 0) : cappedCurrent;
+                            const logicalCurrentHeight = Math.max(0, (valueForCurrentHeight / range) * 100);
+                            const visualCurrentHeight = logicalCurrentHeight / HEADROOM_FACTOR;
+
+                            return (
+                                <div key={data.key} className={`${styles.barPairWrapper} ${styles[favorability + 'Background']}`}>
+                                    {index > 0 && <div className={styles.separatorLine}></div>}
+                                    {changeText && (
+                                        <div className={`${styles.changeLabel} ${styles[favorability + 'Change']}`}>
+                                            {changeText}
+                                        </div>
+                                    )}
+                                    <div className={styles.priorValueLabel} style={{ bottom: `calc(${visualPriorHeight}% + 4px)` }}>
+                                        {formatNumber(data.priorValue, decimals)}
+                                    </div>
+                                    <div className={styles.currentValueLabel} style={{ bottom: `calc(${visualCurrentHeight}% + 4px)` }}>
+                                        {formatNumber(data.currentValue, decimals)}
+                                    </div>
+                                    <div className={styles.priorBar} style={{ height: `${visualPriorHeight}%`, backgroundColor: `var(${getColor(data.priorValue)})` }} />
+                                    <div className={styles.currentBar} style={{ height: `${visualCurrentHeight}%`, backgroundColor: `var(${getColor(data.currentValue)})` }} />
+                                </div>
+                            );
+                        })}
                     </div>
-                );
-            })}
+                </div>
+                <div className={styles.xAxisLabels}>
+                    {chartData.map(data => (
+                        <div key={data.key} className={styles.segmentLabel}>{data.label}</div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };
 
-
 export const SerialComparisonChart: React.FC<{ report: CctaReport }> = ({ report }) => {
-    const [mode, setMode] = useState<MapMode>("Stenosis");
-    const [vesselFilter, setVesselFilter] = useState<VesselFilter>("Whole Heart");
+    const [viewMode, setViewMode] = useState<ViewMode>("All Vessels");
+    const [metricMode, setMetricMode] = useState<MapMode>("Stenosis");
     const [compositionSubMode, setCompositionSubMode] = useState<PlaqueVolumeMode | undefined>(undefined);
-    // 1. State for the matrix visibility
     const [showMatrix, setShowMatrix] = useState(false);
 
     if (!report.priorStudy) return null;
+
+    const handleMetricClick = (m: MapMode) => {
+        setMetricMode(m);
+        if (m === 'Composition') {
+            setCompositionSubMode('LRNC_Volume');
+        } else {
+            setCompositionSubMode(undefined);
+        }
+    }
 
     return (
         <div className={styles.container}>
             <div className={styles.header}>
                 <h2 className={styles.title}>Serial Comparison Analysis</h2>
                 <div className={styles.vesselToggles}>
-                    {(["Whole Heart", "RCA", "LM+LAD", "LCx"] as VesselFilter[]).map(v => (
-                        <button key={v} onClick={() => setVesselFilter(v)} className={vesselFilter === v ? styles.activeVesselToggle : styles.vesselToggle}>
+                    {/* UPDATED: Reordered the main view toggles */}
+                    {(["All Vessels", "LM+LAD", "LCx", "RCA", "Systems"] as ViewMode[]).map(v => (
+                        <button key={v} onClick={() => setViewMode(v)} className={viewMode === v ? styles.activeVesselToggle : styles.vesselToggle}>
                             {v.replace('+', ' + ')}
                         </button>
                     ))}
-                    {/* 2. The MATRIX button itself */}
                     <button onClick={() => setShowMatrix(prev => !prev)} className={showMatrix ? styles.activeMatrixToggle : styles.matrixToggle}>
                         MATRIX
                     </button>
@@ -129,23 +252,24 @@ export const SerialComparisonChart: React.FC<{ report: CctaReport }> = ({ report
                     <span>Current: {report.patient.studyDate}</span>
                 </div>
             </div>
+            
             <div className={styles.controls}>
-                {(["Stenosis", "HRP", "Composition", "Burden"] as MapMode[]).map(m => (
-                    <button key={m} onClick={() => { setMode(m); if (m === 'Composition') { if (!compositionSubMode) setCompositionSubMode("LRNC_Volume"); } else { setCompositionSubMode(undefined); } }} className={mode === m ? styles.activeToggle : styles.toggle}> {m} </button>
+                {(["Stenosis", "FFRct", "Composition"] as (MapMode | "Composition")[]).map(m => (
+                    <button key={m} onClick={() => handleMetricClick(m)} className={metricMode === m ? styles.activeToggle : styles.toggle}> {m} </button>
                 ))}
             </div>
-            {mode === 'Composition' && (
+            {metricMode === 'Composition' && (
                 <div className={styles.controls} style={{marginTop: '-8px', borderBottom: 'none', paddingBottom: '8px'}}>
-                    {(["LRNC_Volume", "NCP_Volume", "CP_Volume"] as PlaqueVolumeMode[]).map(subM => (
+                    {(["LRNC_Volume", "NCP_Volume", "CP_Volume", "TPV", "PAV"] as PlaqueVolumeMode[]).map(subM => (
                         <button key={subM} onClick={() => setCompositionSubMode(subM)} className={compositionSubMode === subM ? styles.activeToggle : styles.toggle}>
                             {subM.replace('_', ' ')}
                         </button>
                     ))}
                 </div>
             )}
-            <SerialChartDisplay currentReport={report} priorReport={report.priorStudy} mode={mode} vesselFilter={vesselFilter} />
+
+            <ChartDisplay currentReport={report} priorReport={report.priorStudy} metricMode={metricMode} compositionSubMode={compositionSubMode} viewMode={viewMode} />
             
-            {/* 3. Conditional rendering of the matrix */}
             {showMatrix && <ChangeMatrix currentReport={report} priorReport={report.priorStudy} />}
         </div>
     );

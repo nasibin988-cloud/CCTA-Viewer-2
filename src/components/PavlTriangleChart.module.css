@@ -1,0 +1,28 @@
+/* src/components/PavlTriangleChart.module.css */
+.container {
+    width: 100px;
+    height: 40px;
+    position: relative;
+}
+
+.barContainer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: calc(100% - 14px); /* Leave space for labels */
+    width: 100%;
+}
+
+.bar {
+    width: 6%;
+    background-color: var(--risk-neutral-gray);
+    transition: background-color 0.3s ease;
+}
+
+.labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--muted-ink);
+    margin-top: 2px;
+}

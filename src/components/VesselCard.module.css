@@ -1,58 +1,76 @@
 /* src/components/VesselCard.module.css */
 
 .card {
-  background-color: var(--bg-card, white);
-  color: var(--ink-on-light, #1A202C);
+  background-color: var(--bg-card);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--line);
   padding: 16px;
-  flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 300px;
+  justify-content: space-between;
+  min-height: 130px; /* UPDATED height */
+  backdrop-filter: blur(10px);
 }
 
-.contentWrapper {
+.prominent {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  min-height: 140px; /* UPDATED prominent height */
+  border-color: var(--accent);
+}
+
+.topRow {
   display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.leftContent {
-  flex-grow: 1;
-  min-width: 0; 
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .vesselTitle {
-  font-size: var(--text-h2);
+  font-size: 16px;
   font-weight: 600;
-  margin: 0 0 12px 0;
+  margin: 0;
+  line-height: 1.2;
 }
 
-.compositionTable {
-  font-size: var(--text-small);
+.prominent .vesselTitle {
+  font-size: 20px;
 }
 
-/* NEW: Using Flexbox for the table rows */
-.tableHeader, .tableRow {
+.pavChartWrapper {
   display: flex;
-  width: 100%;
+  flex-direction: column;
   align-items: center;
 }
 
-/* NEW: Explicit styles for each of the four columns */
-.col1 { width: 25%; text-align: center; }
-.col2 { width: 25%; text-align: center; }
-.col3 { width: 25%; text-align: center; }
-.col4 { width: 25%; text-align: center; }
-
-.tableHeader {
-  color: var(--muted-ink-on-light, var(--muted-ink));
-  padding-bottom: 4px;
-  font-weight: 500;
+.pavValue {
+  font-size: 11px;
+  color: var(--muted-ink);
+  text-align: center;
+  margin-top: 4px;
+  line-height: 1;
 }
 
-.tableRow {
+.pavValueNumber {
+  font-size: 16px;
   font-weight: 600;
-  font-size: 14px;
+  color: var(--ink);
+}
+
+.bottomRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.metric .label {
+  font-size: 11px;
+  color: var(--muted-ink);
+  margin-bottom: 4px;
+}
+
+.metric .value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
 }
