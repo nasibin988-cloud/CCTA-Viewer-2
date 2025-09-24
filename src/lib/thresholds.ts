@@ -12,14 +12,30 @@ export const getStenosisColor = (pct: number): RiskColorVar => {
   return '--risk-red';
 };
 
-// FFRct Coloring - Lower values are worse
-export const getFfrctColor = (ffrct: number | undefined): RiskColorVar => {
-  if (ffrct === undefined || ffrct > 0.85) return '--risk-dark-green';
-  if (ffrct > 0.80) return '--risk-green';
-  if (ffrct > 0.75) return '--risk-yellow';
-  if (ffrct > 0.70) return '--risk-orange';
-  return '--risk-red';
+// NEW: FFRct Coloring from a continuous 51-color spectrum
+export const getFfrctColor = (ffrct: number | undefined): string => {
+    if (ffrct === undefined) return '#808080'; // Return a neutral gray for undefined values
+
+    const ffrctSpectrum: string[] = [
+        '#D90429', '#DA0E28', '#DC1827', '#DE2226', '#DF2C25', '#E13624', '#E34023', 
+        '#E44A22', '#E65421', '#E85E20', '#E9681F', '#EB721E', '#ED7C1D', '#EE861C', 
+        '#F0901B', '#F29A1A', '#F3A419', '#F5AE18', '#F7B817', '#F8C216', '#FACD15', 
+        '#FCD714', '#FDE113', '#FFEB12', '#FDF30E', '#ECF60C', '#D8F80B', '#C5FA09', 
+        '#B1FC08', '#9EFE06', '#8AFF05', '#77FF03', '#63FF02', '#50FE01', '#3CFD00', 
+        '#30F81A', '#24F333', '#18EE4D', '#0CE966', '#00E580', '#00E099', '#00DBB3', 
+        '#00D7CD', '#00D2E6', '#00CEFF', '#00C2FF', '#00B6FF', '#00ABFF', '#00A0FF', 
+        '#0095FF', '#008AFF'
+    ];
+
+    // Normalize ffrct from [0.5, 1.0] to an index from 0 to 50
+    const minFfrct = 0.50;
+    const maxFfrct = 1.00;
+    const normalized = Math.max(0, Math.min(1, (ffrct - minFfrct) / (maxFfrct - minFfrct)));
+    const index = Math.round(normalized * (ffrctSpectrum.length - 1));
+    
+    return ffrctSpectrum[index];
 };
+
 
 // Dominant Plaque Composition Coloring
 export const getCompositionColor = (ncp: number, cp: number): CompositionColorVar => {

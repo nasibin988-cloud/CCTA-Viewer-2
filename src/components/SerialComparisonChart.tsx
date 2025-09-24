@@ -30,9 +30,9 @@ const SEGMENT_NAMES: { [key: number]: string } = {
     1: "pRCA", 2: "mRCA", 3: "dRCA", 4: "R-PDA", 16: "R-PLB"
 };
 
-const CHART_CONFIG: { [key: string]: { title: string; max: number; min?: number; thresholds: {v: number; c: RiskColorVar}[] } } = {
+const CHART_CONFIG: { [key: string]: { title: string; max: number; min?: number; thresholds: {v: number; c: RiskColorVar | string}[] } } = {
     Stenosis: { title: "Stenosis (%)", max: 100, thresholds: [ {v: 25, c: '--risk-yellow'}, {v: 50, c: '--risk-orange'}, {v: 70, c: '--risk-red'} ]},
-    FFRct: { title: "FFRct", max: 1.0, min: 0.5, thresholds: [ {v: 0.70, c: '--risk-red'}, {v: 0.75, c: '--risk-orange'}, {v: 0.80, c: '--risk-yellow'}, {v: 0.85, c: '--risk-green'} ]},
+    FFRct: { title: "FFRct", max: 1.0, min: 0.5, thresholds: [ {v: 0.70, c: getFfrctColor(0.70)}, {v: 0.75, c: getFfrctColor(0.75)}, {v: 0.80, c: getFfrctColor(0.80)}, {v: 0.85, c: getFfrctColor(0.85)} ]},
     LRNC_Volume: { title: "LRNC Volume (mm³)", max: 36, thresholds: [ {v: 5, c: '--risk-yellow'}, {v: 15, c: '--risk-orange'}, {v: 30, c: '--risk-red'} ]},
     NCP_Volume: { title: "NCP Volume (mm³)", max: 120, thresholds: [ {v: 20, c: '--risk-yellow'}, {v: 50, c: '--risk-orange'}, {v: 100, c: '--risk-red'} ]},
     CP_Volume: { title: "CP Volume (mm³)", max: 360, thresholds: [ {v: 50, c: '--risk-yellow'}, {v: 150, c: '--risk-orange'}, {v: 300, c: '--risk-red'} ]},
@@ -126,15 +126,28 @@ const ChartDisplay: React.FC<{
     if (!config) return <div style={{ height: '450px', display: 'grid', placeContent: 'center' }}><p>Select a metric to view the chart.</p></div>;
 
     const getColor = (value: number) => {
+        let colorVar: RiskColorVar;
         switch(configKey) {
-            case 'Stenosis': return getStenosisColor(value);
+            case 'Stenosis': 
+                colorVar = getStenosisColor(value);
+                return `var(${colorVar})`;
             case 'FFRct': return getFfrctColor(value);
-            case 'LRNC_Volume': return getLrncVolumeColor(value);
-            case 'NCP_Volume': return getNcpVolumeColor(value);
-            case 'CP_Volume': return getCpVolumeColor(value);
-            case 'TPV': return viewMode === 'Systems' ? getGlobalTpvColor(value) : getTpvColor(value);
-            case 'PAV': return getPavColor(value);
-            default: return '--risk-dark-green';
+            case 'LRNC_Volume': 
+                colorVar = getLrncVolumeColor(value);
+                return `var(${colorVar})`;
+            case 'NCP_Volume':
+                colorVar = getNcpVolumeColor(value);
+                return `var(${colorVar})`;
+            case 'CP_Volume':
+                colorVar = getCpVolumeColor(value);
+                return `var(${colorVar})`;
+            case 'TPV':
+                colorVar = viewMode === 'Systems' ? getGlobalTpvColor(value) : getTpvColor(value);
+                return `var(${colorVar})`;
+            case 'PAV':
+                colorVar = getPavColor(value);
+                return `var(${colorVar})`;
+            default: return 'var(--risk-dark-green)';
         }
     };
 
@@ -149,9 +162,10 @@ const ChartDisplay: React.FC<{
                     const logicalBottom = isFfrct ? ((line.v - (config.min || 0)) / range) * 100 : (line.v / config.max) * 100;
                     const visualBottom = logicalBottom / HEADROOM_FACTOR;
                     if (visualBottom <= 0 || visualBottom > 100) return null;
+                    const color = typeof line.c === 'string' && line.c.startsWith('#') ? line.c : `var(${line.c})`;
                     return (
                         <div key={line.v} className={styles.yAxisTick} style={{ bottom: `${visualBottom}%` }}>
-                           <span style={{ color: `var(${line.c})` }}>{line.v}</span>
+                           <span style={{ color: color }}>{line.v}</span>
                         </div>
                     );
                 })}
@@ -162,7 +176,8 @@ const ChartDisplay: React.FC<{
                         const logicalBottom = isFfrct ? ((line.v - (config.min || 0)) / range) * 100 : (line.v / config.max) * 100;
                         const visualBottom = logicalBottom / HEADROOM_FACTOR;
                         if (visualBottom <= 0 || visualBottom > 100) return null;
-                        return <div key={line.v} className={styles.gridLine} style={{ bottom: `${visualBottom}%`, borderTopColor: `var(${line.c})` }}></div>
+                        const color = typeof line.c === 'string' && line.c.startsWith('#') ? line.c : `var(${line.c})`;
+                        return <div key={line.v} className={styles.gridLine} style={{ bottom: `${visualBottom}%`, borderTopColor: color }}></div>
                     })}
                     {isFfrct && <div className={styles.axisBreak}></div>}
                     
@@ -197,8 +212,8 @@ const ChartDisplay: React.FC<{
                                     <div className={styles.currentValueLabel} style={{ bottom: `calc(${visualCurrentHeight}% + 4px)` }}>
                                         {formatNumber(data.currentValue, decimals)}
                                     </div>
-                                    <div className={styles.priorBar} style={{ height: `${visualPriorHeight}%`, backgroundColor: `var(${getColor(data.priorValue)})` }} />
-                                    <div className={styles.currentBar} style={{ height: `${visualCurrentHeight}%`, backgroundColor: `var(${getColor(data.currentValue)})` }} />
+                                    <div className={styles.priorBar} style={{ height: `${visualPriorHeight}%`, backgroundColor: getColor(data.priorValue) }} />
+                                    <div className={styles.currentBar} style={{ height: `${visualCurrentHeight}%`, backgroundColor: getColor(data.currentValue) }} />
                                 </div>
                             );
                         })}
@@ -216,8 +231,8 @@ const ChartDisplay: React.FC<{
 
 export const SerialComparisonChart: React.FC<{ report: CctaReport }> = ({ report }) => {
     const [viewMode, setViewMode] = useState<ViewMode>("All Vessels");
-    const [metricMode, setMetricMode] = useState<MapMode>("Stenosis");
-    const [compositionSubMode, setCompositionSubMode] = useState<PlaqueVolumeMode | undefined>(undefined);
+    const [metricMode, setMetricMode] = useState<MapMode>("Composition");
+    const [compositionSubMode, setCompositionSubMode] = useState<PlaqueVolumeMode | undefined>('LRNC_Volume');
     const [showMatrix, setShowMatrix] = useState(false);
 
     if (!report.priorStudy) return null;
@@ -252,7 +267,7 @@ export const SerialComparisonChart: React.FC<{ report: CctaReport }> = ({ report
             </div>
             
             <div className={styles.controls}>
-                {(["Stenosis", "FFRct", "Composition"] as (MapMode | "Composition")[]).map(m => (
+                {(["Composition", "FFRct", "Stenosis"] as (MapMode | "Composition")[]).map(m => (
                     <button key={m} onClick={() => handleMetricClick(m as MapMode)} className={metricMode === m ? styles.activeToggle : styles.toggle}> {m} </button>
                 ))}
             </div>

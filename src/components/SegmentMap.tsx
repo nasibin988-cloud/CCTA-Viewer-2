@@ -3,6 +3,27 @@ import { CctaReport, PlaqueVolumeMode, Segment, MapMode } from '@/types/ccta';
 import { SCCT18_SVG } from '@/lib/scct18';
 import styles from './SegmentMap.module.css';
 import { pavStage, formatNumber } from '@/lib/compute';
+import { getFfrctColor } from '@/lib/thresholds';
+
+// FFRct Spectrum Legend Component
+const FfrctSpectrumLegend: React.FC = () => {
+    const gradient = 'linear-gradient(to right, #D90429, #F8EC0A, #8AFF05, #008AFF)';
+    return (
+        <div className={styles.spectrumLegendContainer}>
+            <div className={styles.spectrumBar} style={{ background: gradient }} />
+            <div className={styles.spectrumLabels}>
+                <span>0.50</span>
+                <span>0.75</span>
+                <span>1.00</span>
+            </div>
+            <div className={styles.spectrumText}>
+                 <span>May Be Functionally Significant</span>
+                 <span>May Be Not Significant</span>
+            </div>
+        </div>
+    );
+};
+
 
 export const Scoreboard: React.FC<{ report: CctaReport }> = ({ report }) => {
     const global = report.global;
@@ -89,6 +110,12 @@ export const Scoreboard: React.FC<{ report: CctaReport }> = ({ report }) => {
 const Tooltip: React.FC<{ data: Segment | null }> = ({ data }) => {
     if (!data) return null;
     const totalPlaque = data.lrnc_mm3 + data.ncp_mm3 + data.cp_mm3;
+
+    // Calculate Delta FFR from the pullback array
+    const deltaFfr = data.ffrct_pullback && data.ffrct_pullback.length > 0
+        ? Math.abs(data.ffrct_pullback[0] - data.ffrct_pullback[data.ffrct_pullback.length - 1])
+        : null;
+
     return (
         <>
             <h4>{data.name} (Seg {data.segId})</h4>
@@ -96,6 +123,11 @@ const Tooltip: React.FC<{ data: Segment | null }> = ({ data }) => {
                 <span>Stenosis:</span>       <span>{formatNumber(data.stenosis_pct, 0)}%</span>
                 <span>PAV:</span>            <span>{formatNumber(data.pav_pct, 1)}%</span>
                 <span>FFRct:</span>          <span>{data.ffrct !== undefined ? formatNumber(data.ffrct, 2) : 'N/A'}</span>
+                {deltaFfr !== null && (
+                    <>
+                        <span>ΔFFR:</span> <span>{formatNumber(deltaFfr, 2)}</span>
+                    </>
+                )}
                 <hr /><hr />
                 <span>Total Plaque:</span>   <span>{formatNumber(totalPlaque, 1)} mm³</span>
                 <span> ┕ LRNC:</span>       <span>{formatNumber(data.lrnc_mm3, 1)} mm³</span>
@@ -107,8 +139,8 @@ const Tooltip: React.FC<{ data: Segment | null }> = ({ data }) => {
 };
 
 export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
-    const [mode, setMode] = useState<MapMode>("Stenosis");
-    const [compositionSubMode, setCompositionSubMode] = useState<PlaqueVolumeMode | undefined>(undefined);
+    const [mode, setMode] = useState<MapMode>("Composition");
+    const [compositionSubMode, setCompositionSubMode] = useState<PlaqueVolumeMode | undefined>('LRNC_Volume');
     const [tooltip, setTooltip] = useState<{ visible: boolean; data: Segment | null; x: number; y: number }>({
         visible: false, data: null, x: 0, y: 0,
     });
@@ -145,7 +177,7 @@ export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
             )}
 
             <div className={styles.controls}>
-                {(["Stenosis", "FFRct", "Composition", "Lesions", "Interactive"] as MapMode[]).map(m => (
+                {(["Composition", "FFRct", "Stenosis", "Lesions of Interest", "Interactive"] as MapMode[]).map(m => (
                     <button key={m} onClick={() => handleModeClick(m)}
                             className={mode === m ? styles.activeToggle : styles.toggle}>
                         {m}
@@ -176,7 +208,9 @@ export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
                 </div>
                
                 <div className={styles.legend}>
-                    <h4>Legend ({compositionSubMode ? compositionSubMode.replace('_', ' ') : mode})</h4>
+                     {mode !== 'FFRct' && (
+                        <h4>Legend ({compositionSubMode ? compositionSubMode.replace('_', ' ') : mode})</h4>
+                    )}
 
                     {mode === 'Stenosis' && (
                         <>
@@ -188,15 +222,8 @@ export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
                         </>
                     )}
                     
-                    {mode === 'FFRct' && (
-                        <>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-red)' }}></span> Ischemic (≤0.70)</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-orange)' }}></span> Borderline (0.71-0.75)</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-yellow)' }}></span> Gray Zone (0.76-0.80)</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-green)' }}></span> Normal (0.81-0.85)</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-dark-green)' }}></span> Healthy ({'>'}0.85)</div>
-                        </>
-                    )}
+                    {mode === 'FFRct' && <FfrctSpectrumLegend />}
+
 
                     {mode === 'Composition' && compositionSubMode === 'LRNC_Volume' && (
                          <>

@@ -73,6 +73,12 @@
   transform: translateY(50%);
 }
 
+/* Class for bolding specific tick labels */
+.boldTick {
+    font-weight: 900; /* Increased font weight */
+    font-size: 11px; /* Slightly larger font */
+}
+
 .mainChartColumn {
     flex-grow: 1;
     display: flex;
@@ -93,6 +99,18 @@
     border-top: 1px dotted;
     opacity: 0.6;
 }
+
+/* REVERSED: 0.80 line is now the boldest */
+.gridLineBold {
+    border-top-width: 3px; 
+    opacity: 0.9;
+}
+
+.gridLineBolder {
+    border-top-width: 4px; 
+    opacity: 1;
+}
+
 
 .axisBreak {
     position: absolute;

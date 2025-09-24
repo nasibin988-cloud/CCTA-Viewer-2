@@ -39,6 +39,7 @@ export interface Segment {
   stenosis_pct: number;
   ri: number;
   ffrct?: number;
+  ffrct_pullback?: number[]; // NEW: Array for simulated pullback
   lrnc_mm3: number;
   ncp_mm3: number;
   cp_mm3: number;
