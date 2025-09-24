@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { CctaReport, PlaqueVolumeMode, Segment, MapMode } from '@/types/ccta';
 import styles from './SerialComparisonChart.module.css';
-import { 
-    getStenosisColor, getFfrctColor, getLrncVolumeColor, getNcpVolumeColor, 
-    getCpVolumeColor, getPavColor, getTpvColor, RiskColorVar, getGlobalTpvColor 
+import {
+    getStenosisColor, getFfrctColor, getLrncVolumeColor, getNcpVolumeColor,
+    getCpVolumeColor, getPavColor, getTpvColor, RiskColorVar, getGlobalTpvColor
 } from '@/lib/thresholds';
 import { formatNumber } from '@/lib/compute';
 import { ChangeMatrix } from './ChangeMatrix';
@@ -22,7 +22,6 @@ const SEGMENT_ORDER: number[] = [
     1, 2, 3, 4, 16 // RCA chain
 ];
 
-// UPDATED: Reordered the columns for the "Systems" view
 const SYSTEMS_ORDER: ("Whole Heart" | "LM+LAD" | "LCx" | "RCA")[] = ["Whole Heart", "LM+LAD", "LCx", "RCA"];
 
 const SEGMENT_NAMES: { [key: number]: string } = {
@@ -41,14 +40,14 @@ const CHART_CONFIG: { [key: string]: { title: string; max: number; min?: number;
     PAV: { title: "PAV (%)", max: 18, thresholds: [ {v: 5, c: '--risk-orange'}, {v: 15, c: '--risk-red'} ]},
 };
 
-const getChangeLabel = (change: number, metric: any) => {
+const getChangeLabel = (change: number, metric: PlaqueVolumeMode | MapMode | undefined) => {
     if (Math.abs(change) < 1e-6) return null;
     const sign = change > 0 ? '+' : '';
-    const decimals = (metric === 'Stenosis' || (metric === 'TPV' && metric !== 'Systems')) ? 0 : (metric === 'FFRct' ? 2 : 1);
+    const decimals = (metric === 'Stenosis' || metric === 'TPV') ? 0 : (metric === 'FFRct' ? 2 : 1);
     return `${sign}${formatNumber(change, decimals)}`;
 };
 
-const getChangeFavorability = (change: number, metric: any): 'favorable' | 'unfavorable' | 'neutral' => {
+const getChangeFavorability = (change: number, metric: PlaqueVolumeMode | MapMode | undefined): 'favorable' | 'unfavorable' | 'neutral' => {
     if (Math.abs(change) < 1e-6) return 'neutral';
     
     let isFavorable: boolean;
@@ -70,7 +69,7 @@ const ChartDisplay: React.FC<{
     const HEADROOM_FACTOR = 1.1;
 
     const chartData = useMemo(() => {
-        const getSegmentValue = (segment: Segment | undefined, key: any): number => {
+        const getSegmentValue = (segment: Segment | undefined, key: PlaqueVolumeMode | MapMode | undefined): number => {
             if (!segment) return 0;
             switch (key) {
                 case 'Stenosis': return segment.stenosis_pct;
@@ -83,8 +82,8 @@ const ChartDisplay: React.FC<{
                 default: return 0;
             }
         };
-        const getSystemValue = (report: CctaReport | Omit<CctaReport, 'priorStudy'>, system: string, key: any): number => {
-            const segmentsToAnalyze = (report.vessels as any[]).flatMap(v => v.segments).filter((s: Segment) => {
+        const getSystemValue = (report: CctaReport | Omit<CctaReport, 'priorStudy'>, system: string, key: PlaqueVolumeMode | MapMode | undefined): number => {
+            const segmentsToAnalyze = report.vessels.flatMap(v => v.segments).filter((s: Segment) => {
                 if (system === "Whole Heart") return true;
                 const vesselId = system === 'LM+LAD' ? 'LM_LAD' : system;
                 return VESSEL_SEGMENTS[vesselId as keyof typeof VESSEL_SEGMENTS]?.includes(s.segId);
@@ -237,7 +236,6 @@ export const SerialComparisonChart: React.FC<{ report: CctaReport }> = ({ report
             <div className={styles.header}>
                 <h2 className={styles.title}>Serial Comparison Analysis</h2>
                 <div className={styles.vesselToggles}>
-                    {/* UPDATED: Reordered the main view toggles */}
                     {(["All Vessels", "LM+LAD", "LCx", "RCA", "Systems"] as ViewMode[]).map(v => (
                         <button key={v} onClick={() => setViewMode(v)} className={viewMode === v ? styles.activeVesselToggle : styles.vesselToggle}>
                             {v.replace('+', ' + ')}
@@ -255,7 +253,7 @@ export const SerialComparisonChart: React.FC<{ report: CctaReport }> = ({ report
             
             <div className={styles.controls}>
                 {(["Stenosis", "FFRct", "Composition"] as (MapMode | "Composition")[]).map(m => (
-                    <button key={m} onClick={() => handleMetricClick(m)} className={metricMode === m ? styles.activeToggle : styles.toggle}> {m} </button>
+                    <button key={m} onClick={() => handleMetricClick(m as MapMode)} className={metricMode === m ? styles.activeToggle : styles.toggle}> {m} </button>
                 ))}
             </div>
             {metricMode === 'Composition' && (

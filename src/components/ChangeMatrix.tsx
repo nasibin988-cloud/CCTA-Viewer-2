@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { CctaReport, Segment } from '@/types/ccta';
+import { CctaReport } from '@/types/ccta'; // "Segment" was removed as it was unused
 import styles from './ChangeMatrix.module.css';
 import { formatNumber } from '@/lib/compute';
 

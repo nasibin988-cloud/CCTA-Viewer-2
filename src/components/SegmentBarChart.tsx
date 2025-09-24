@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { CctaReport, PlaqueVolumeMode, Segment, MapMode } from '@/types/ccta';
 import styles from './SegmentBarChart.module.css';
 import {
-    getStenosisColor, getFfrctColor, getCompositionColor, getLrncVolumeColor,
+    getStenosisColor, getFfrctColor, getLrncVolumeColor, // Removed getCompositionColor
     getNcpVolumeColor, getCpVolumeColor, getPavColor, getTpvColor,
     RiskColorVar
 } from '@/lib/thresholds';

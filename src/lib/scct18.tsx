@@ -25,7 +25,7 @@ const darkenColor = (hex: string, percent: number): string => {
     if (!hex || !hex.startsWith('#')) return hex; // Return original if not a valid hex
 
     // Ensure hex is 6 digits
-    let normalizedHex = hex.length === 4 ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}` : hex;
+    const normalizedHex = hex.length === 4 ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}` : hex;
 
     let r = parseInt(normalizedHex.substring(1, 3), 16);
     let g = parseInt(normalizedHex.substring(3, 5), 16);
