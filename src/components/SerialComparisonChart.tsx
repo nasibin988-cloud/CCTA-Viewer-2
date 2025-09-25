@@ -267,8 +267,8 @@ export const SerialComparisonChart: React.FC<{ report: CctaReport }> = ({ report
             </div>
             
             <div className={styles.controls}>
-                {(["Composition", "FFRct", "Stenosis"] as (MapMode | "Composition")[]).map(m => (
-                    <button key={m} onClick={() => handleMetricClick(m as MapMode)} className={metricMode === m ? styles.activeToggle : styles.toggle}> {m} </button>
+                {(["Composition", "FFRct", "Stenosis"] as MapMode[]).map(m => (
+                    <button key={m} onClick={() => handleMetricClick(m)} className={metricMode === m ? styles.activeToggle : styles.toggle}> {m} </button>
                 ))}
             </div>
             {metricMode === 'Composition' && (

@@ -23,8 +23,9 @@ export const SegmentViewer: React.FC<{ selectedSegment: Segment | null }> = ({ s
   }
 
   const tpv = selectedSegment.lrnc_mm3 + selectedSegment.ncp_mm3 + selectedSegment.cp_mm3;
-  // Per the image, "Non-Calcified" is the portion of NCP that is NOT LRNC
-  const nonCalcifiedForDonut = selectedSegment.ncp_mm3 - selectedSegment.lrnc_mm3;
+  
+  // The previous calculation here was incorrect. 
+  // The JSON provides three distinct, additive plaque components.
 
   return (
     <div className={styles.viewerContainer}>
@@ -60,7 +61,7 @@ export const SegmentViewer: React.FC<{ selectedSegment: Segment | null }> = ({ s
 
             <div className={styles.compositionCard}>
                 <div className={styles.metricLabel}>Plaque Composition</div>
-                <CompositionDonutChart lrnc={selectedSegment.lrnc_mm3} ncp={nonCalcifiedForDonut} cp={selectedSegment.cp_mm3} />
+                <CompositionDonutChart lrnc={selectedSegment.lrnc_mm3} ncp={selectedSegment.ncp_mm3} cp={selectedSegment.cp_mm3} />
             </div>
 
             <div className={styles.bottomMetrics}>
