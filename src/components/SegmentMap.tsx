@@ -25,6 +25,12 @@ const FfrctSpectrumLegend: React.FC = () => {
     );
 };
 
+// ADDED: Correct names for display in the tooltip
+const SEGMENT_NAMES: { [key: number]: string } = {
+    5: "LM", 6: "pLAD", 7: "mLAD", 8: "dLAD", 9: "D1", 10: "D2", 17: "Ramus",
+    11: "pLCx", 12: "OM1", 13: "dLCx", 14: "OM2", 18: "L-PLB", 15: "L-PDA",
+    1: "pRCA", 2: "mRCA", 3: "dRCA", 4: "R-PDA", 16: "R-PLB"
+};
 
 export const Scoreboard: React.FC<{ report: CctaReport }> = ({ report }) => {
     const global = report.global;
@@ -108,7 +114,7 @@ export const Scoreboard: React.FC<{ report: CctaReport }> = ({ report }) => {
 };
 
 
-const Tooltip: React.FC<{ data: Segment | null }> = ({ data }) => {
+const Tooltip: React.FC<{ data: Segment | null, name: string | undefined }> = ({ data, name }) => {
     if (!data) return null;
     const totalPlaque = data.lrnc_mm3 + data.ncp_mm3 + data.cp_mm3;
 
@@ -119,7 +125,7 @@ const Tooltip: React.FC<{ data: Segment | null }> = ({ data }) => {
 
     return (
         <>
-            <h4>{data.name} (Seg {data.segId})</h4>
+            <h4>{name || data.name} (Seg {data.segId})</h4>
             <div className={styles.tooltipGrid}>
                 <span>Stenosis:</span>       <span>{formatNumber(data.stenosis_pct, 0)}%</span>
                 <span>PAV:</span>            <span>{formatNumber(data.pav_pct, 1)}%</span>
@@ -142,8 +148,8 @@ const Tooltip: React.FC<{ data: Segment | null }> = ({ data }) => {
 export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
     const [mode, setMode] = useState<MapMode>("Composition");
     const [compositionSubMode, setCompositionSubMode] = useState<PlaqueVolumeMode | undefined>('LRNC_Volume');
-    const [tooltip, setTooltip] = useState<{ visible: boolean; data: Segment | null; x: number; y: number }>({
-        visible: false, data: null, x: 0, y: 0,
+    const [tooltip, setTooltip] = useState<{ visible: boolean; data: Segment | null; name: string | undefined; x: number; y: number }>({
+        visible: false, data: null, name: undefined, x: 0, y: 0,
     });
     
     const containerRef = useRef<HTMLDivElement>(null);
@@ -154,38 +160,26 @@ export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
         if (!segmentData || !containerRef.current) return;
 
         const containerRect = containerRef.current.getBoundingClientRect();
-        const tooltipMaxWidth = 280; 
+        const tooltipWidth = 280; 
         const tooltipHeight = 220;
-        
-        // Calculate position relative to the container
+        const cursorOffset = 20;
+
+        let left = (event.clientX - containerRect.left) + cursorOffset;
         let top = event.clientY - containerRect.top;
-        let left = event.clientX - containerRect.left;
 
-        // Apply specific positioning rules
-        const showOnLeft = [7, 8, 10].includes(segId);
-        if (showOnLeft) {
-            const cursorOffset = 5; // MODIFIED: Use a smaller offset for left-side tooltips
-            left = left - tooltipMaxWidth - cursorOffset;
-        } else {
-            const cursorOffset = 25;
-            left = left + cursorOffset;
+        if (left + tooltipWidth > containerRect.width) {
+            left = containerRect.width - tooltipWidth - 10;
         }
 
-        // Boundary checks
-        if (left < 10) {
-            left = 10;
-        }
-        if (left + tooltipMaxWidth > containerRect.width) {
-            left = containerRect.width - tooltipMaxWidth - 10;
-        }
         if (top + tooltipHeight > containerRect.height) {
             top = containerRect.height - tooltipHeight - 10;
         }
-         if (top < 10) {
+        
+        if (top < 10) {
             top = 10;
         }
 
-        setTooltip({ visible: true, data: segmentData, x: left, y: top });
+        setTooltip({ visible: true, data: segmentData, name: SEGMENT_NAMES[segId], x: left, y: top });
     }, [allSegments]);
 
     const handleSegmentLeave = useCallback(() => {
@@ -201,7 +195,6 @@ export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
       }
     }
 
-    // NEW: Conditional class for the legend
     const legendClass = mode === 'FFRct'
         ? `${styles.legend} ${styles.legendFfrct}`
         : styles.legend;
@@ -210,7 +203,7 @@ export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
         <div className={styles.container} ref={containerRef}>
             {tooltip.visible && (
                 <div className={styles.tooltip} style={{ top: `${tooltip.y}px`, left: `${tooltip.x}px` }}>
-                    <Tooltip data={tooltip.data} />
+                    <Tooltip data={tooltip.data} name={tooltip.name} />
                 </div>
             )}
 
@@ -248,7 +241,7 @@ export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
                         />
                     </div>
 
-                    <div className={legendClass}> {/* MODIFIED: Using conditional class */}
+                    <div className={legendClass}>
                          {mode !== 'FFRct' && (
                             <h4>Legend ({compositionSubMode ? compositionSubMode.replace('_', ' ') : mode})</h4>
                         )}

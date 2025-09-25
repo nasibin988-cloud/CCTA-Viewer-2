@@ -44,7 +44,7 @@
 .mapArea {
   position: relative;
   flex-grow: 1;
-  max-width: 65%; /* MODIFIED: Diagram size is now 65% */
+  max-width: 71.5%; /* MODIFIED: Diagram size is now 71.5% */
   margin: 0; /* MODIFIED: Removed auto margin */
 }
 
