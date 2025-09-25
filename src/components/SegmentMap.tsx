@@ -1,9 +1,9 @@
+// src/components/SegmentMap.tsx
 import React, { useState, useMemo, useCallback, useRef } from 'react';
 import { CctaReport, PlaqueVolumeMode, Segment, MapMode } from '@/types/ccta';
 import { SCCT18_SVG } from '@/lib/scct18';
 import styles from './SegmentMap.module.css';
 import { pavStage, formatNumber } from '@/lib/compute';
-import { getFfrctColor } from '@/lib/thresholds';
 import { SegmentViewer } from './SegmentViewer';
 
 // FFRct Spectrum Legend Component
