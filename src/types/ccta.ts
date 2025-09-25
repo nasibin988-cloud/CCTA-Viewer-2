@@ -36,10 +36,11 @@ export interface Segment {
   segId: number;
   name: string;
   length_mm: number;
+  plaque_length_mm: number; // This line was added
   stenosis_pct: number;
   ri: number;
   ffrct?: number;
-  ffrct_pullback?: number[]; // NEW: Array for simulated pullback
+  ffrct_pullback?: number[];
   lrnc_mm3: number;
   ncp_mm3: number;
   cp_mm3: number;
