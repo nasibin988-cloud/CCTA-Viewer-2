@@ -1,16 +1,14 @@
-// next.config.ts
-import type { NextConfig } from "next";
-import type { RuleSetRule } from "webpack";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   reactStrictMode: true,
   webpack(config) {
-    // Find the existing rule for SVG files
-    const fileLoaderRule = config.module.rules.find((rule): rule is RuleSetRule =>
-      typeof rule === 'object' && rule !== null && 'test' in rule && rule.test instanceof RegExp && rule.test.test(".svg")
+    // Find the existing rule that handles SVG files
+    const fileLoaderRule = config.module.rules.find((rule) =>
+      rule.test?.test?.(".svg")
     );
 
     config.module.rules.push(
+      // Re-add the existing rule, but only for svg imports ending in ?url
       {
         ...fileLoaderRule,
         test: /\.svg$/i,
@@ -19,16 +17,14 @@ const nextConfig: NextConfig = {
       // Convert all other .svg imports to React components
       {
         test: /\.svg$/i,
-        issuer: fileLoaderRule?.issuer,
+        issuer: fileLoaderRule.issuer,
         resourceQuery: { not: /url/ }, // exclude if *.svg?url
         use: ["@svgr/webpack"],
       }
     );
 
     // Modify the original rule to exclude SVGs that are not marked with ?url
-    if (fileLoaderRule) {
-      fileLoaderRule.exclude = /\.svg$/i;
-    }
+    fileLoaderRule.exclude = /\.svg$/i;
 
     return config;
   },
