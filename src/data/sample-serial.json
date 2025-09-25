@@ -31,11 +31,11 @@
       "ri_max": 1.05,
       "composition": { "lrnc_mm3": 2, "ncp_mm3": 90, "cp_mm3": 33 },
       "segments": [
-        { "segId": 1, "name": "Prox RCA", "stenosis_pct": 10, "ffrct": 0.92, "ffrct_pullback": [0.95, 0.94, 0.94, 0.93, 0.93, 0.93, 0.92, 0.92, 0.92, 0.92], "lrnc_mm3": 0, "ncp_mm3": 4, "cp_mm3": 0, "pav_pct": 8.3 },
-        { "segId": 2, "name": "Mid RCA", "stenosis_pct": 15, "ffrct": 0.88, "ffrct_pullback": [0.92, 0.92, 0.91, 0.90, 0.90, 0.89, 0.89, 0.88, 0.88, 0.88], "lrnc_mm3": 1, "ncp_mm3": 12, "cp_mm3": 5, "pav_pct": 10.2 },
-        { "segId": 3, "name": "Dist RCA", "stenosis_pct": 5, "ffrct": 0.85, "ffrct_pullback": [0.88, 0.88, 0.87, 0.87, 0.86, 0.86, 0.86, 0.85, 0.85, 0.85], "lrnc_mm3": 0, "ncp_mm3": 8, "cp_mm3": 2, "pav_pct": 6.1 },
-        { "segId": 4, "name": "R-PDA", "stenosis_pct": 12, "ffrct": 0.84, "ffrct_pullback": [0.85, 0.85, 0.85, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84], "lrnc_mm3": 1, "ncp_mm3": 15, "cp_mm3": 8, "pav_pct": 11 },
-        { "segId": 16, "name": "R-PLB", "stenosis_pct": 0, "ffrct": 0.85, "ffrct_pullback": [0.85, 0.85, 0.85, 0.85, 0.85, 0.85, 0.85, 0.85, 0.85, 0.85], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 }
+        { "segId": 1, "name": "Prox RCA", "length_mm": 20.0, "plaque_length_mm": 5.1, "stenosis_pct": 10, "ffrct": 0.92, "ffrct_pullback": [0.95, 0.94, 0.94, 0.93, 0.93, 0.93, 0.92, 0.92, 0.92, 0.92], "lrnc_mm3": 0, "ncp_mm3": 4, "cp_mm3": 0, "pav_pct": 8.3 },
+        { "segId": 2, "name": "Mid RCA", "length_mm": 30.0, "plaque_length_mm": 12.5, "stenosis_pct": 15, "ffrct": 0.88, "ffrct_pullback": [0.92, 0.92, 0.91, 0.90, 0.90, 0.89, 0.89, 0.88, 0.88, 0.88], "lrnc_mm3": 1, "ncp_mm3": 12, "cp_mm3": 5, "pav_pct": 10.2 },
+        { "segId": 3, "name": "Dist RCA", "length_mm": 40.0, "plaque_length_mm": 8.8, "stenosis_pct": 5, "ffrct": 0.85, "ffrct_pullback": [0.88, 0.88, 0.87, 0.87, 0.86, 0.86, 0.86, 0.85, 0.85, 0.85], "lrnc_mm3": 0, "ncp_mm3": 8, "cp_mm3": 2, "pav_pct": 6.1 },
+        { "segId": 4, "name": "R-PDA", "length_mm": 25.0, "plaque_length_mm": 14.2, "stenosis_pct": 12, "ffrct": 0.84, "ffrct_pullback": [0.85, 0.85, 0.85, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84], "lrnc_mm3": 1, "ncp_mm3": 15, "cp_mm3": 8, "pav_pct": 11 },
+        { "segId": 16, "name": "R-PLB", "length_mm": 22.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.85, "ffrct_pullback": [0.85, 0.85, 0.85, 0.85, 0.85, 0.85, 0.85, 0.85, 0.85, 0.85], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 }
       ]
     },
     {
@@ -47,12 +47,12 @@
       "ri_max": 1.21,
       "composition": { "lrnc_mm3": 34.2, "ncp_mm3": 93, "cp_mm3": 195.6 },
       "segments": [
-        { "segId": 5, "name": "LM", "stenosis_pct": 8, "ffrct": 0.94, "ffrct_pullback": [0.98, 0.97, 0.96, 0.96, 0.95, 0.95, 0.95, 0.94, 0.94, 0.94], "lrnc_mm3": 2, "ncp_mm3": 10, "cp_mm3": 4, "pav_pct": 9.5 },
-        { "segId": 6, "name": "Prox LAD", "stenosis_pct": 55, "ffrct": 0.78, "ffrct_pullback": [0.94, 0.92, 0.88, 0.85, 0.82, 0.80, 0.79, 0.78, 0.78, 0.78], "lrnc_mm3": 12, "ncp_mm3": 38, "cp_mm3": 6, "pav_pct": 24.8 },
-        { "segId": 7, "name": "Mid LAD", "stenosis_pct": 0, "ffrct": 0.78, "ffrct_pullback": [0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
-        { "segId": 8, "name": "Dist LAD", "stenosis_pct": 0, "ffrct": 0.78, "ffrct_pullback": [0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
-        { "segId": 9, "name": "D1", "stenosis_pct": 0, "ffrct": 0.78, "ffrct_pullback": [0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
-        { "segId": 10, "name": "D2", "stenosis_pct": 38, "ffrct": 0.78, "ffrct_pullback": [0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78], "lrnc_mm3": 0, "ncp_mm3": 8, "cp_mm3": 0, "pav_pct": 12.1 }
+        { "segId": 5, "name": "LM", "length_mm": 15.0, "plaque_length_mm": 14.5, "stenosis_pct": 8, "ffrct": 0.94, "ffrct_pullback": [0.98, 0.97, 0.96, 0.96, 0.95, 0.95, 0.95, 0.94, 0.94, 0.94], "lrnc_mm3": 2, "ncp_mm3": 10, "cp_mm3": 4, "pav_pct": 9.5 },
+        { "segId": 6, "name": "Prox LAD", "length_mm": 22.4, "plaque_length_mm": 22.4, "stenosis_pct": 55, "ffrct": 0.78, "ffrct_pullback": [0.94, 0.92, 0.88, 0.85, 0.82, 0.80, 0.79, 0.78, 0.78, 0.78], "lrnc_mm3": 12, "ncp_mm3": 38, "cp_mm3": 6, "pav_pct": 24.8 },
+        { "segId": 7, "name": "Mid LAD", "length_mm": 30.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.78, "ffrct_pullback": [0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
+        { "segId": 8, "name": "Dist LAD", "length_mm": 40.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.78, "ffrct_pullback": [0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
+        { "segId": 9, "name": "D1", "length_mm": 18.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.78, "ffrct_pullback": [0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
+        { "segId": 10, "name": "D2", "length_mm": 14.5, "plaque_length_mm": 6.1, "stenosis_pct": 38, "ffrct": 0.78, "ffrct_pullback": [0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78], "lrnc_mm3": 0, "ncp_mm3": 8, "cp_mm3": 0, "pav_pct": 12.1 }
       ]
     },
     {
@@ -64,13 +64,13 @@
       "ri_max": 1,
       "composition": { "lrnc_mm3": 1.2, "ncp_mm3": 35, "cp_mm3": 28.8 },
       "segments": [
-        { "segId": 11, "name": "Prox LCx", "stenosis_pct": 0, "ffrct": 0.92, "ffrct_pullback": [0.94, 0.94, 0.93, 0.93, 0.93, 0.92, 0.92, 0.92, 0.92, 0.92], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 5 },
-        { "segId": 12, "name": "OM1", "stenosis_pct": 0, "ffrct": 0.92, "ffrct_pullback": [0.92, 0.92, 0.92, 0.92, 0.92, 0.92, 0.92, 0.92, 0.92, 0.92], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
-        { "segId": 13, "name": "Dist LCx", "stenosis_pct": 20, "ffrct": 0.86, "ffrct_pullback": [0.92, 0.91, 0.90, 0.89, 0.88, 0.88, 0.87, 0.87, 0.86, 0.86], "lrnc_mm3": 0, "ncp_mm3": 14, "cp_mm3": 11, "pav_pct": 15.4 },
-        { "segId": 14, "name": "OM2", "stenosis_pct": 0, "ffrct": 0.86, "ffrct_pullback": [0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
-        { "segId": 15, "name": "L-PDA", "stenosis_pct": 18, "ffrct": 0.86, "ffrct_pullback": [0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86], "lrnc_mm3": 1, "ncp_mm3": 11, "cp_mm3": 9, "pav_pct": 14 },
-        { "segId": 17, "name": "L-PLB", "stenosis_pct": 0, "ffrct": 0.94, "ffrct_pullback": [0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 0.94], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
-        { "segId": 18, "name": "Ramus", "stenosis_pct": 0, "ffrct": 0.86, "ffrct_pullback": [0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 }
+        { "segId": 11, "name": "Prox LCx", "length_mm": 20.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.92, "ffrct_pullback": [0.94, 0.94, 0.93, 0.93, 0.93, 0.92, 0.92, 0.92, 0.92, 0.92], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 5 },
+        { "segId": 12, "name": "OM1", "length_mm": 25.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.92, "ffrct_pullback": [0.92, 0.92, 0.92, 0.92, 0.92, 0.92, 0.92, 0.92, 0.92, 0.92], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
+        { "segId": 13, "name": "Dist LCx", "length_mm": 35.0, "plaque_length_mm": 18.9, "stenosis_pct": 20, "ffrct": 0.86, "ffrct_pullback": [0.92, 0.91, 0.90, 0.89, 0.88, 0.88, 0.87, 0.87, 0.86, 0.86], "lrnc_mm3": 0, "ncp_mm3": 14, "cp_mm3": 11, "pav_pct": 15.4 },
+        { "segId": 14, "name": "OM2", "length_mm": 22.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.86, "ffrct_pullback": [0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
+        { "segId": 15, "name": "L-PDA", "length_mm": 28.0, "plaque_length_mm": 15.3, "stenosis_pct": 18, "ffrct": 0.86, "ffrct_pullback": [0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86], "lrnc_mm3": 1, "ncp_mm3": 11, "cp_mm3": 9, "pav_pct": 14 },
+        { "segId": 17, "name": "Ramus", "length_mm": 15.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.94, "ffrct_pullback": [0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 0.94, 0.94], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
+        { "segId": 18, "name": "L-PLB", "length_mm": 19.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.86, "ffrct_pullback": [0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 }
       ]
     }
   ],
@@ -80,32 +80,32 @@
     "vessels": [
       {
         "id": "RCA", "segments": [
-          { "segId": 1, "name": "Prox RCA", "stenosis_pct": 8, "ffrct": 0.93, "ffrct_pullback": [0.96, 0.95, 0.95, 0.94, 0.94, 0.94, 0.93, 0.93, 0.93, 0.93], "lrnc_mm3": 0, "ncp_mm3": 2, "cp_mm3": 0, "pav_pct": 7.9 },
-          { "segId": 2, "name": "Mid RCA", "stenosis_pct": 12, "ffrct": 0.90, "ffrct_pullback": [0.93, 0.92, 0.92, 0.91, 0.91, 0.91, 0.90, 0.90, 0.90, 0.90], "lrnc_mm3": 0, "ncp_mm3": 10, "cp_mm3": 4, "pav_pct": 8.5 },
-          { "segId": 3, "name": "Dist RCA", "stenosis_pct": 0, "ffrct": 0.88, "ffrct_pullback": [0.90, 0.90, 0.89, 0.89, 0.89, 0.88, 0.88, 0.88, 0.88, 0.88], "lrnc_mm3": 0, "ncp_mm3": 6, "cp_mm3": 1, "pav_pct": 5.2 },
-          { "segId": 4, "name": "R-PDA", "stenosis_pct": 10, "ffrct": 0.86, "ffrct_pullback": [0.88, 0.88, 0.87, 0.87, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86], "lrnc_mm3": 1, "ncp_mm3": 12, "cp_mm3": 6, "pav_pct": 9 },
-          { "segId": 16, "name": "R-PLB", "stenosis_pct": 0, "ffrct": 0.88, "ffrct_pullback": [0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 }
+          { "segId": 1, "name": "Prox RCA", "length_mm": 20.0, "plaque_length_mm": 4.0, "stenosis_pct": 8, "ffrct": 0.93, "ffrct_pullback": [0.96, 0.95, 0.95, 0.94, 0.94, 0.94, 0.93, 0.93, 0.93, 0.93], "lrnc_mm3": 0, "ncp_mm3": 2, "cp_mm3": 0, "pav_pct": 7.9 },
+          { "segId": 2, "name": "Mid RCA", "length_mm": 30.0, "plaque_length_mm": 10.1, "stenosis_pct": 12, "ffrct": 0.90, "ffrct_pullback": [0.93, 0.92, 0.92, 0.91, 0.91, 0.91, 0.90, 0.90, 0.90, 0.90], "lrnc_mm3": 0, "ncp_mm3": 10, "cp_mm3": 4, "pav_pct": 8.5 },
+          { "segId": 3, "name": "Dist RCA", "length_mm": 40.0, "plaque_length_mm": 6.5, "stenosis_pct": 0, "ffrct": 0.88, "ffrct_pullback": [0.90, 0.90, 0.89, 0.89, 0.89, 0.88, 0.88, 0.88, 0.88, 0.88], "lrnc_mm3": 0, "ncp_mm3": 6, "cp_mm3": 1, "pav_pct": 5.2 },
+          { "segId": 4, "name": "R-PDA", "length_mm": 25.0, "plaque_length_mm": 11.8, "stenosis_pct": 10, "ffrct": 0.86, "ffrct_pullback": [0.88, 0.88, 0.87, 0.87, 0.86, 0.86, 0.86, 0.86, 0.86, 0.86], "lrnc_mm3": 1, "ncp_mm3": 12, "cp_mm3": 6, "pav_pct": 9 },
+          { "segId": 16, "name": "R-PLB", "length_mm": 22.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.88, "ffrct_pullback": [0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 }
         ]
       },
       {
         "id": "LM_LAD", "segments": [
-          { "segId": 5, "name": "LM", "stenosis_pct": 5, "ffrct": 0.93, "ffrct_pullback": [0.97, 0.96, 0.95, 0.95, 0.94, 0.94, 0.94, 0.93, 0.93, 0.93], "lrnc_mm3": 1, "ncp_mm3": 8, "cp_mm3": 2, "pav_pct": 7.1 },
-          { "segId": 6, "name": "Prox LAD", "stenosis_pct": 48, "ffrct": 0.80, "ffrct_pullback": [0.93, 0.91, 0.88, 0.85, 0.84, 0.82, 0.81, 0.81, 0.80, 0.80], "lrnc_mm3": 10, "ncp_mm3": 30, "cp_mm3": 5, "pav_pct": 22.3 },
-          { "segId": 7, "name": "Mid LAD", "stenosis_pct": 0, "ffrct": 0.80, "ffrct_pullback": [0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
-          { "segId": 8, "name": "Dist LAD", "stenosis_pct": 0, "ffrct": 0.80, "ffrct_pullback": [0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
-          { "segId": 9, "name": "D1", "stenosis_pct": 0, "ffrct": 0.80, "ffrct_pullback": [0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
-          { "segId": 10, "name": "D2", "stenosis_pct": 30, "ffrct": 0.80, "ffrct_pullback": [0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80], "lrnc_mm3": 0, "ncp_mm3": 5, "cp_mm3": 0, "pav_pct": 10.9 }
+          { "segId": 5, "name": "LM", "length_mm": 15.0, "plaque_length_mm": 13.1, "stenosis_pct": 5, "ffrct": 0.93, "ffrct_pullback": [0.97, 0.96, 0.95, 0.95, 0.94, 0.94, 0.94, 0.93, 0.93, 0.93], "lrnc_mm3": 1, "ncp_mm3": 8, "cp_mm3": 2, "pav_pct": 7.1 },
+          { "segId": 6, "name": "Prox LAD", "length_mm": 22.4, "plaque_length_mm": 21.0, "stenosis_pct": 48, "ffrct": 0.80, "ffrct_pullback": [0.93, 0.91, 0.88, 0.85, 0.84, 0.82, 0.81, 0.81, 0.80, 0.80], "lrnc_mm3": 10, "ncp_mm3": 30, "cp_mm3": 5, "pav_pct": 22.3 },
+          { "segId": 7, "name": "Mid LAD", "length_mm": 30.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.80, "ffrct_pullback": [0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
+          { "segId": 8, "name": "Dist LAD", "length_mm": 40.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.80, "ffrct_pullback": [0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
+          { "segId": 9, "name": "D1", "length_mm": 18.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.80, "ffrct_pullback": [0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
+          { "segId": 10, "name": "D2", "length_mm": 14.5, "plaque_length_mm": 4.9, "stenosis_pct": 30, "ffrct": 0.80, "ffrct_pullback": [0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80, 0.80], "lrnc_mm3": 0, "ncp_mm3": 5, "cp_mm3": 0, "pav_pct": 10.9 }
         ]
       },
       {
         "id": "LCx", "segments": [
-          { "segId": 11, "name": "Prox LCx", "stenosis_pct": 0, "ffrct": 0.91, "ffrct_pullback": [0.93, 0.93, 0.92, 0.92, 0.92, 0.91, 0.91, 0.91, 0.91, 0.91], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 4 },
-          { "segId": 12, "name": "OM1", "stenosis_pct": 0, "ffrct": 0.91, "ffrct_pullback": [0.91, 0.91, 0.91, 0.91, 0.91, 0.91, 0.91, 0.91, 0.91, 0.91], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
-          { "segId": 13, "name": "Dist LCx", "stenosis_pct": 15, "ffrct": 0.88, "ffrct_pullback": [0.91, 0.91, 0.90, 0.90, 0.89, 0.89, 0.89, 0.88, 0.88, 0.88], "lrnc_mm3": 0, "ncp_mm3": 12, "cp_mm3": 10, "pav_pct": 13.6 },
-          { "segId": 14, "name": "OM2", "stenosis_pct": 0, "ffrct": 0.88, "ffrct_pullback": [0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
-          { "segId": 15, "name": "L-PDA", "stenosis_pct": 15, "ffrct": 0.88, "ffrct_pullback": [0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88], "lrnc_mm3": 0, "ncp_mm3": 9, "cp_mm3": 8, "pav_pct": 12 },
-          { "segId": 17, "name": "L-PLB", "stenosis_pct": 0, "ffrct": 0.93, "ffrct_pullback": [0.93, 0.93, 0.93, 0.93, 0.93, 0.93, 0.93, 0.93, 0.93, 0.93], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
-          { "segId": 18, "name": "Ramus", "stenosis_pct": 0, "ffrct": 0.88, "ffrct_pullback": [0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 }
+          { "segId": 11, "name": "Prox LCx", "length_mm": 20.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.91, "ffrct_pullback": [0.93, 0.93, 0.92, 0.92, 0.92, 0.91, 0.91, 0.91, 0.91, 0.91], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 4 },
+          { "segId": 12, "name": "OM1", "length_mm": 25.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.91, "ffrct_pullback": [0.91, 0.91, 0.91, 0.91, 0.91, 0.91, 0.91, 0.91, 0.91, 0.91], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
+          { "segId": 13, "name": "Dist LCx", "length_mm": 35.0, "plaque_length_mm": 16.2, "stenosis_pct": 15, "ffrct": 0.88, "ffrct_pullback": [0.91, 0.91, 0.90, 0.90, 0.89, 0.89, 0.89, 0.88, 0.88, 0.88], "lrnc_mm3": 0, "ncp_mm3": 12, "cp_mm3": 10, "pav_pct": 13.6 },
+          { "segId": 14, "name": "OM2", "length_mm": 22.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.88, "ffrct_pullback": [0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
+          { "segId": 15, "name": "L-PDA", "length_mm": 28.0, "plaque_length_mm": 13.3, "stenosis_pct": 15, "ffrct": 0.88, "ffrct_pullback": [0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88], "lrnc_mm3": 0, "ncp_mm3": 9, "cp_mm3": 8, "pav_pct": 12 },
+          { "segId": 17, "name": "Ramus", "length_mm": 15.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.93, "ffrct_pullback": [0.93, 0.93, 0.93, 0.93, 0.93, 0.93, 0.93, 0.93, 0.93, 0.93], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 },
+          { "segId": 18, "name": "L-PLB", "length_mm": 19.0, "plaque_length_mm": 0, "stenosis_pct": 0, "ffrct": 0.88, "ffrct_pullback": [0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88, 0.88], "lrnc_mm3": 0, "ncp_mm3": 0, "cp_mm3": 0, "pav_pct": 0 }
         ]
       }
     ]

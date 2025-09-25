@@ -18,6 +18,7 @@ interface SCCT18_SVG_Props {
     compositionSubMode?: PlaqueVolumeMode;
     onSegmentHover: (segId: number, event: React.MouseEvent) => void;
     onSegmentLeave: () => void;
+    onSegmentClick: (segId: number) => void;
 }
 
 // Helper function to calculate a darker shade of a hex color
@@ -43,7 +44,7 @@ const darkenColor = (hex: string, percent: number): string => {
 };
 
 
-const SCCT18_SVG_Component: React.FC<SCCT18_SVG_Props> = ({ report, mode, compositionSubMode, onSegmentHover, onSegmentLeave }) => {
+const SCCT18_SVG_Component: React.FC<SCCT18_SVG_Props> = ({ report, mode, compositionSubMode, onSegmentHover, onSegmentLeave, onSegmentClick }) => {
     const [colorMap, setColorMap] = useState<{ [key: number]: { fill: string; stroke: string } }>({});
 
     useEffect(() => {
@@ -90,6 +91,7 @@ const SCCT18_SVG_Component: React.FC<SCCT18_SVG_Props> = ({ report, mode, compos
                 colorMap={colorMap}
                 onSegmentHover={onSegmentHover}
                 onSegmentLeave={onSegmentLeave}
+                onSegmentClick={onSegmentClick}
             />
         </div>
     );

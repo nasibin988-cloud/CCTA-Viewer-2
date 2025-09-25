@@ -151,9 +151,15 @@ export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
     const [tooltip, setTooltip] = useState<{ visible: boolean; data: Segment | null; name: string | undefined; x: number; y: number }>({
         visible: false, data: null, name: undefined, x: 0, y: 0,
     });
+    const [selectedSegment, setSelectedSegment] = useState<Segment | null>(null);
     
     const containerRef = useRef<HTMLDivElement>(null);
     const allSegments = useMemo(() => report.vessels.flatMap(v => v.segments), [report]);
+    
+    const handleSegmentClick = useCallback((segId: number) => {
+        const segmentData = allSegments.find(s => s.segId === segId);
+        setSelectedSegment(segmentData || null);
+    }, [allSegments]);
     
     const handleSegmentHover = useCallback((segId: number, event: React.MouseEvent) => {
         const segmentData = allSegments.find(s => s.segId === segId);
@@ -228,7 +234,7 @@ export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
             )}
             
             <div className={styles.mainContentArea}>
-                <SegmentViewer />
+                <SegmentViewer selectedSegment={selectedSegment} />
 
                 <div className={styles.mapArea}>
                     <div className={styles.mapBackground}>
@@ -238,6 +244,7 @@ export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
                             compositionSubMode={compositionSubMode}
                             onSegmentHover={handleSegmentHover}
                             onSegmentLeave={handleSegmentLeave}
+                            onSegmentClick={handleSegmentClick}
                         />
                     </div>
 
