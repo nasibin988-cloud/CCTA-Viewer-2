@@ -4,54 +4,57 @@
   background-color: var(--bg-card);
   border-radius: 12px;
   border: 1px solid var(--line);
-  padding: 16px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 130px; /* UPDATED height */
+  min-height: 140px;
   backdrop-filter: blur(10px);
+  flex: 1;
+  min-width: 200px;
 }
 
 .prominent {
-  padding-top: 20px;
-  padding-bottom: 20px;
-  min-height: 140px; /* UPDATED prominent height */
+  padding-top: 16px;
+  padding-bottom: 16px;
+  min-height: 150px;
   border-color: var(--accent);
+  flex-grow: 1.2;
 }
 
-.topRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+.titleRow {
+  text-align: left; /* MODIFIED alignment */
+  margin-bottom: 8px;
 }
 
 .vesselTitle {
-  font-size: 16px;
+  font-size: 18px; /* MODIFIED font-size */
   font-weight: 600;
   margin: 0;
   line-height: 1.2;
 }
 
 .prominent .vesselTitle {
-  font-size: 20px;
+  font-size: 22px; /* MODIFIED font-size */
 }
 
-.pavChartWrapper {
+.pavRow {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 4px; /* MODIFIED margin */
 }
 
 .pavValue {
   font-size: 11px;
   color: var(--muted-ink);
-  text-align: center;
-  margin-top: 4px;
-  line-height: 1;
+  text-align: left;
+  line-height: 1.2;
 }
 
 .pavValueNumber {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--ink);
 }
@@ -59,7 +62,7 @@
 .bottomRow {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 4px;
   text-align: center;
 }
 

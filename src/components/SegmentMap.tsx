@@ -1,9 +1,10 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import { CctaReport, PlaqueVolumeMode, Segment, MapMode } from '@/types/ccta';
 import { SCCT18_SVG } from '@/lib/scct18';
 import styles from './SegmentMap.module.css';
 import { pavStage, formatNumber } from '@/lib/compute';
 import { getFfrctColor } from '@/lib/thresholds';
+import { SegmentViewer } from './SegmentViewer';
 
 // FFRct Spectrum Legend Component
 const FfrctSpectrumLegend: React.FC = () => {
@@ -144,14 +145,47 @@ export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
     const [tooltip, setTooltip] = useState<{ visible: boolean; data: Segment | null; x: number; y: number }>({
         visible: false, data: null, x: 0, y: 0,
     });
-
+    
+    const containerRef = useRef<HTMLDivElement>(null);
     const allSegments = useMemo(() => report.vessels.flatMap(v => v.segments), [report]);
-
+    
     const handleSegmentHover = useCallback((segId: number, event: React.MouseEvent) => {
         const segmentData = allSegments.find(s => s.segId === segId);
-        if (segmentData) {
-            setTooltip({ visible: true, data: segmentData, x: event.nativeEvent.offsetX + 20, y: event.nativeEvent.offsetY + 20 });
+        if (!segmentData || !containerRef.current) return;
+
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const tooltipMaxWidth = 280; 
+        const tooltipHeight = 220;
+        
+        // Calculate position relative to the container
+        let top = event.clientY - containerRect.top;
+        let left = event.clientX - containerRect.left;
+
+        // Apply specific positioning rules
+        const showOnLeft = [7, 8, 10].includes(segId);
+        if (showOnLeft) {
+            const cursorOffset = 5; // MODIFIED: Use a smaller offset for left-side tooltips
+            left = left - tooltipMaxWidth - cursorOffset;
+        } else {
+            const cursorOffset = 25;
+            left = left + cursorOffset;
         }
+
+        // Boundary checks
+        if (left < 10) {
+            left = 10;
+        }
+        if (left + tooltipMaxWidth > containerRect.width) {
+            left = containerRect.width - tooltipMaxWidth - 10;
+        }
+        if (top + tooltipHeight > containerRect.height) {
+            top = containerRect.height - tooltipHeight - 10;
+        }
+         if (top < 10) {
+            top = 10;
+        }
+
+        setTooltip({ visible: true, data: segmentData, x: left, y: top });
     }, [allSegments]);
 
     const handleSegmentLeave = useCallback(() => {
@@ -161,15 +195,19 @@ export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
     const handleModeClick = (m: MapMode) => {
       setMode(m);
       if (m === 'Composition') {
-          // Automatically select LRNC_Volume when Composition is clicked
           setCompositionSubMode('LRNC_Volume');
       } else {
           setCompositionSubMode(undefined);
       }
     }
 
+    // NEW: Conditional class for the legend
+    const legendClass = mode === 'FFRct'
+        ? `${styles.legend} ${styles.legendFfrct}`
+        : styles.legend;
+
     return (
-        <div className={styles.container}>
+        <div className={styles.container} ref={containerRef}>
             {tooltip.visible && (
                 <div className={styles.tooltip} style={{ top: `${tooltip.y}px`, left: `${tooltip.x}px` }}>
                     <Tooltip data={tooltip.data} />
@@ -195,80 +233,84 @@ export const SegmentMap: React.FC<{ report: CctaReport }> = ({ report }) => {
                     ))}
                 </div>
             )}
+            
+            <div className={styles.mainContentArea}>
+                <SegmentViewer />
 
-            <div className={styles.mapArea}>
-                <div className={styles.mapBackground}>
-                    <SCCT18_SVG
-                        report={report}
-                        mode={mode}
-                        compositionSubMode={compositionSubMode}
-                        onSegmentHover={handleSegmentHover}
-                        onSegmentLeave={handleSegmentLeave}
-                    />
-                </div>
-               
-                <div className={styles.legend}>
-                     {mode !== 'FFRct' && (
-                        <h4>Legend ({compositionSubMode ? compositionSubMode.replace('_', ' ') : mode})</h4>
-                    )}
+                <div className={styles.mapArea}>
+                    <div className={styles.mapBackground}>
+                        <SCCT18_SVG
+                            report={report}
+                            mode={mode}
+                            compositionSubMode={compositionSubMode}
+                            onSegmentHover={handleSegmentHover}
+                            onSegmentLeave={handleSegmentLeave}
+                        />
+                    </div>
 
-                    {mode === 'Stenosis' && (
-                        <>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-red)' }}></span> Severe (≥70%)</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-orange)' }}></span> Moderate (50-69%)</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-yellow)' }}></span> Mild (25-49%)</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-green)' }}></span> Minimal (1-24%)</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-dark-green)' }}></span> None (0%)</div>
-                        </>
-                    )}
-                    
-                    {mode === 'FFRct' && <FfrctSpectrumLegend />}
+                    <div className={legendClass}> {/* MODIFIED: Using conditional class */}
+                         {mode !== 'FFRct' && (
+                            <h4>Legend ({compositionSubMode ? compositionSubMode.replace('_', ' ') : mode})</h4>
+                        )}
+
+                        {mode === 'Stenosis' && (
+                            <>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-red)' }}></span> Severe (≥70%)</div>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-orange)' }}></span> Moderate (50-69%)</div>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-yellow)' }}></span> Mild (25-49%)</div>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-green)' }}></span> Minimal (1-24%)</div>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-dark-green)' }}></span> None (0%)</div>
+                            </>
+                        )}
+                        
+                        {mode === 'FFRct' && <FfrctSpectrumLegend />}
 
 
-                    {mode === 'Composition' && compositionSubMode === 'LRNC_Volume' && (
-                         <>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-red)' }}></span> ≥30 mm³</div>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-orange)' }}></span> 15-29 mm³</div>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-yellow)' }}></span> 5-14 mm³</div>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-green)' }}></span> 1-4 mm³</div>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-dark-green)' }}></span> 0 mm³</div>
-                         </>
-                    )}
-                    {mode === 'Composition' && compositionSubMode === 'NCP_Volume' && (
-                         <>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-red)' }}></span> ≥100 mm³</div>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-orange)' }}></span> 50-99 mm³</div>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-yellow)' }}></span> 20-49 mm³</div>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-green)' }}></span> 1-19 mm³</div>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-dark-green)' }}></span> 0 mm³</div>
-                         </>
-                    )}
-                    {mode === 'Composition' && compositionSubMode === 'CP_Volume' && (
-                         <>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-red)' }}></span> ≥300 mm³</div>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-orange)' }}></span> 150-299 mm³</div>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-yellow)' }}></span> 50-149 mm³</div>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-green)' }}></span> 1-49 mm³</div>
-                             <div className={styles.legendItem}><span style={{ background: 'var(--risk-dark-green)' }}></span> 0 mm³</div>
-                         </>
-                    )}
-                     {mode === 'Composition' && compositionSubMode === 'TPV' && (
-                        <>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-red)' }}></span> ≥150 mm³</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-orange)' }}></span> 75-149 mm³</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-yellow)' }}></span> 30-74 mm³</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-green)' }}></span> 1-29 mm³</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-dark-green)' }}></span> 0 mm³</div>
-                        </>
-                    )}
-                    {mode === 'Composition' && compositionSubMode === 'PAV' && (
-                        <>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-red)' }}></span> {'>'}15%</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-orange)' }}></span> {'>'}5-15%</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-green)' }}></span> {'>'}0-5%</div>
-                            <div className={styles.legendItem}><span style={{ background: 'var(--risk-dark-green)' }}></span> 0%</div>
-                        </>
-                    )}
+                        {mode === 'Composition' && compositionSubMode === 'LRNC_Volume' && (
+                             <>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-red)' }}></span> ≥30 mm³</div>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-orange)' }}></span> 15-29 mm³</div>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-yellow)' }}></span> 5-14 mm³</div>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-green)' }}></span> 1-4 mm³</div>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-dark-green)' }}></span> 0 mm³</div>
+                             </>
+                        )}
+                        {mode === 'Composition' && compositionSubMode === 'NCP_Volume' && (
+                             <>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-red)' }}></span> ≥100 mm³</div>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-orange)' }}></span> 50-99 mm³</div>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-yellow)' }}></span> 20-49 mm³</div>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-green)' }}></span> 1-19 mm³</div>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-dark-green)' }}></span> 0 mm³</div>
+                             </>
+                        )}
+                        {mode === 'Composition' && compositionSubMode === 'CP_Volume' && (
+                             <>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-red)' }}></span> ≥300 mm³</div>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-orange)' }}></span> 150-299 mm³</div>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-yellow)' }}></span> 50-149 mm³</div>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-green)' }}></span> 1-49 mm³</div>
+                                 <div className={styles.legendItem}><span style={{ background: 'var(--risk-dark-green)' }}></span> 0 mm³</div>
+                             </>
+                        )}
+                         {mode === 'Composition' && compositionSubMode === 'TPV' && (
+                            <>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-red)' }}></span> ≥150 mm³</div>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-orange)' }}></span> 75-149 mm³</div>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-yellow)' }}></span> 30-74 mm³</div>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-green)' }}></span> 1-29 mm³</div>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-dark-green)' }}></span> 0 mm³</div>
+                            </>
+                        )}
+                        {mode === 'Composition' && compositionSubMode === 'PAV' && (
+                            <>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-red)' }}></span> {'>'}15%</div>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-orange)' }}></span> {'>'}5-15%</div>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-green)' }}></span> {'>'}0-5%</div>
+                                <div className={styles.legendItem}><span style={{ background: 'var(--risk-dark-green)' }}></span> 0%</div>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

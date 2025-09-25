@@ -34,22 +34,21 @@ export default function HomePage() {
   return (
     <main style={{ padding: '16px', maxWidth: '1600px', margin: '0 auto' }}>
       <SummaryHeader report={report} />
-      
-      <div style={{ display: 'flex', gap: '16px', marginTop: '16px', alignItems: 'flex-start' }}>
-        
-        <section style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '320px', flexShrink: 0 }}>
-          {orderedVessels.map((vessel, index) => (
-            <VesselCard key={vessel.id} vessel={vessel} isProminent={index === 0} />
-          ))}
-          <Scoreboard report={report} />
-        </section>
 
-        <section style={{ flexGrow: 1, minWidth: 0 }}>
-          <SegmentMap report={report} />
-          <SegmentBarChart report={report} />
-          <SerialComparisonChart report={report} />
-        </section>
-      </div>
+      {/* NEW: Horizontal header section for cards and scoreboard */}
+      <header style={{ display: 'flex', flexDirection: 'row', gap: '12px', alignItems: 'stretch', marginBottom: '16px' }}>
+        {orderedVessels.map((vessel, index) => (
+          <VesselCard key={vessel.id} vessel={vessel} isProminent={index === 0} />
+        ))}
+        <Scoreboard report={report} />
+      </header>
+
+      {/* Main content area */}
+      <section>
+        <SegmentMap report={report} />
+        <SegmentBarChart report={report} />
+        <SerialComparisonChart report={report} />
+      </section>
     </main>
   );
 }

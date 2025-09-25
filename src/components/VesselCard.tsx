@@ -17,19 +17,27 @@ export const VesselCard: React.FC<{ vessel: Vessel; isProminent?: boolean; }> = 
 
   return (
     <div className={cardClass}>
-      <div className={styles.topRow}>
+      {/* Row 1: Title */}
+      <div className={styles.titleRow}>
         <h3 className={styles.vesselTitle}>
           {vesselName}
           {vessel.id !== 'WHOLE_HEART' && ` (${formatNumber(vessel.length_mm, 0)} mm)`}
         </h3>
-        <div className={styles.pavChartWrapper}>
-          <PavlTriangleChart pav={vessel.pav_pct} />
-          <div className={styles.pavValue}>
-            PAV = <span className={styles.pavValueNumber} style={{ color: wholeHeartPavColor }}>{formatNumber(vessel.pav_pct, 1)}%</span>
-          </div>
+      </div>
+
+      {/* Row 2: PAV Chart and Value */}
+      <div className={styles.pavRow}>
+        <PavlTriangleChart pav={vessel.pav_pct} />
+        <div className={styles.pavValue}>
+          PAV =
+          <br />
+          <span className={styles.pavValueNumber} style={{ color: wholeHeartPavColor }}>
+            {formatNumber(vessel.pav_pct, 1)}%
+          </span>
         </div>
       </div>
 
+      {/* Row 3: Metrics */}
       <div className={styles.bottomRow}>
         <div className={styles.metric}>
           <div className={styles.label}>LRNCV</div>

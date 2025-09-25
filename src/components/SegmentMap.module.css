@@ -34,9 +34,18 @@
   border-bottom: 2px solid var(--accent);
 }
 
+.mainContentArea {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; /* MODIFIED: Pushes diagram to the right */
+  align-items: stretch;
+}
+
 .mapArea {
   position: relative;
-  width: 100%;
+  flex-grow: 1;
+  max-width: 65%; /* MODIFIED: Diagram size is now 65% */
+  margin: 0; /* MODIFIED: Removed auto margin */
 }
 
 .mapBackground {
@@ -54,6 +63,9 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  flex: 1.5;
+  justify-content: center;
+  min-width: 300px;
 }
 
 .meterGroup p {
@@ -124,15 +136,20 @@
 .legend {
   position: absolute;
   bottom: 8px;
-  left: 8px;
+  right: 8px; /* MODIFIED: Aligned to the right */
   background-color: rgba(26, 32, 44, 0.7);
   padding: 8px;
   border-radius: 6px;
   font-size: 11px;
   border: 1px solid var(--line);
   backdrop-filter: blur(5px);
-  width: 220px; 
+  width: 180px; /* MODIFIED: Made default legend shorter */
 }
+
+.legendFfrct {
+  width: 280px; /* NEW: Longer legend for FFRct */
+}
+
 .legend h4 {
   margin: 0 0 8px 0;
   font-size: 12px;
@@ -178,7 +195,7 @@
 
 /* Tooltip styles */
 .tooltip {
-  position: fixed;
+  position: absolute;
   background-color: rgba(30, 41, 59, 0.9);
   color: white;
   border-radius: 8px;

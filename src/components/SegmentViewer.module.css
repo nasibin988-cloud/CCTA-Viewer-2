@@ -1,0 +1,25 @@
+/* src/components/SegmentViewer.module.css */
+
+.viewerContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 8px;
+  width: 300px; /* Fixed width for the viewer panel */
+  height: 100%; /* Take full height of the parent */
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background-color: rgba(11, 17, 32, 0.5); /* Slightly different background */
+}
+
+.segmentCell {
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  /* Placeholder styling */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-ink);
+  font-size: 12px;
+}
